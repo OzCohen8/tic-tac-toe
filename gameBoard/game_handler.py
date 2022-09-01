@@ -3,18 +3,8 @@ import random
 
 from gameBoard.vaidators import *
 from gameBoard.board_handler import BoardHandler
-from gameBoard.errors import InputException
-from gameBoard.player_modal import Player
-
-
-def get_input(input_text: str, validation_func) -> Any:
-    while True:
-        try:
-            input_args = input(input_text)
-            validation_func(input_args)
-            return input_args
-        except InputException as e:
-            print("Input exception; " + str(e))
+from gameBoard.utils import get_input
+from gameBoard.player_modal import Player, Computer
 
 
 class GameHandler:
@@ -24,10 +14,10 @@ class GameHandler:
 
     def __set_players(self, players: List[str]):
         player1: Player = Player(name=players[0].strip(), symbol="X")
-        player2: Player = Player(
-            name=players[1].strip() if len(players) > 1 else "The best tic-tac-toe computer",
-            symbol="O"
-        )
+        if len(players) > 1:
+            player2: Player = Player(name=players[1].strip(), symbol="O")
+        else:
+            player2: Computer = Computer(symbol="O")
         self.players = {1: player1, -1: player2}
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
@@ -67,12 +57,7 @@ class GameHandler:
 
     def play_turn_and_check_winner(self, current_turn: int) -> bool:
         turn_symbol: str = self.players[current_turn].symbol
-        print(f'{self.players[current_turn].name}, select where would you like to place "{turn_symbol}"')
-        print(self.board_handler)
-        spot = get_input(
-            input_text="Enter spot: ",
-            validation_func=self.board_handler.is_spot_valid
-        )
+        spot: str = self.players[current_turn].select_next_move(self.board_handler)
         return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
 
     def run_game(self):
