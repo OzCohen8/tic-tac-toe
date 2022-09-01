@@ -37,13 +37,6 @@ class BoardHandler:
         if np.all(np.diag(np.fliplr(self.board)) == last_symbol__negative_ascii):
             return True
 
-    # def __compute_next_best_move(self):
-    #     if len(self.available_spots) == 9:
-    #         spot = random.randint(1, 9)
-    #     elif len(self.available_spots) == 8 and 5 in self.available_spots:
-    #         spot = 5
-    #     elif
-
     def is_spot_valid(self, spot: str) -> None:
         if spot not in set([str(x) for x in range(1, 10)]):
             raise InputException(f"spot {spot} is not valid choice!")
