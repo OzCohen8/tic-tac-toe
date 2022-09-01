@@ -1,25 +1,40 @@
-from typing import Dict, List
+from typing import Dict, List, Any
 import random
 
+from gameBoard.vaidators import *
 from gameBoard.board_handler import BoardHandler
-from gameBoard.errors import SpotException
+from gameBoard.errors import InputException
 from gameBoard.player_modal import Player
 
 
+def get_input(input_text: str, validation_func) -> Any:
+    while True:
+        try:
+            input_args = input(input_text)
+            validation_func(input_args)
+            return input_args
+        except InputException as e:
+            print("Input exception; " + str(e))
+
+
 class GameHandler:
-    def __init__(self, player1: str, player2: str = None):
-        player1: Player = Player(name=player1, symbol="X")
+    def __init__(self):
+        self.players: Dict[int, Player] = {}
+        self.board_handler: BoardHandler = BoardHandler()
+
+    def __set_players(self, players: List[str]):
+        player1: Player = Player(name=players[0].strip(), symbol="X")
         player2: Player = Player(
-            name=player2 if player2 else "The best tic-tac-toe computer",
+            name=players[1].strip() if len(players) > 1 else "The best tic-tac-toe computer",
             symbol="O"
         )
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
               f' and {player2.name} will be "{player2.symbol}"')
-        self.players: Dict[int, Player] = {1: player1, -1: player2}
-        self.board_handler: BoardHandler = BoardHandler()
+        self.players = {1: player1, -1: player2}
 
-    def __roll_who_start(self):
+    @staticmethod
+    def __roll_who_start():
         return random.choice([1, -1])
 
     def start_game(self) -> int:
@@ -42,13 +57,10 @@ class GameHandler:
             else:
                 self.players[1].score += 1
                 self.players[-1].score += 1
-            print("Want to play another game? (y/n)")
-            another_game: str = ""
-            while True:
-                another_game = input("Enter: ")
-                if another_game in {'n', 'y'}:
-                    break
-                print("not a valid input should be one of y or n")
+            another_game: str = get_input(
+                input_text="Want to play another game? (y/n): ",
+                validation_func=is_another_game_valid
+            )
             if another_game == 'n':
                 print("Player {} won with score of: {}")
                 break
@@ -57,9 +69,18 @@ class GameHandler:
         turn_symbol: str = self.players[current_turn].symbol
         print(f'{self.players[current_turn].name}, select where would you like to place "{turn_symbol}"')
         print(self.board_handler)
-        while True:
-            try:
-                spot = input("Enter: ")
-                return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
-            except SpotException as e:
-                print(e)
+        spot = get_input(
+            input_text="Enter spot: ",
+            validation_func=self.board_handler.is_spot_valid
+        )
+        return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
+
+    def run_game(self):
+        print("Welcome to Oz's tic-tac-toe game!\nplease enter the players names, (can be one player or two :) )")
+        # getting the players names
+        players: str = get_input(
+            input_text="Enter players names: ",
+            validation_func=is_players_valid
+        )
+        self.__set_players(players.split(","))
+        self.start_games()

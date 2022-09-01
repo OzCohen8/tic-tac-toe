@@ -1,5 +1,5 @@
 import numpy as np
-from gameBoard.errors import SpotException
+from gameBoard.errors import InputException
 from typing import Tuple
 """
 Board logic:
@@ -20,13 +20,6 @@ class BoardHandler:
         self.available_spots = set()
         self.reset_board()
 
-    def __is_spot_valid(self, spot: str) -> None:
-        if spot not in set([str(x) for x in range(1, 10)]):
-            raise SpotException(f"spot {spot} is not valid choice!")
-        if spot not in self.available_spots:
-            raise SpotException(f"spot {spot} is already taken!")
-        self.available_spots.remove(spot)
-
     def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol: str) -> bool:
         is_raw_winner: bool = True
         is_column_winner: bool = True
@@ -39,11 +32,17 @@ class BoardHandler:
                 is_column_winner = False
         return is_column_winner or is_raw_winner
 
+    def is_spot_valid(self, spot: str) -> None:
+        if spot not in set([str(x) for x in range(1, 10)]):
+            raise InputException(f"spot {spot} is not valid choice!")
+        if spot not in self.available_spots:
+            raise InputException(f"spot {spot} is already taken!")
+        self.available_spots.remove(spot)
+
     def is_empty_spots_left(self):
         return len(self.available_spots) > 0
 
     def select_board_spot_and_check_winner(self, spot: str, symbol: str) -> bool:
-        self.__is_spot_valid(spot)
         raw: int = (int(spot)-1) // 3
         column: int = (int(spot)-1) % 3
         self.board[raw, column] = symbol
