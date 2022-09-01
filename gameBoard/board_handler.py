@@ -1,8 +1,7 @@
 import numpy as np
-import random
 from gameBoard.errors import InputException
 from termcolor import colored
-from typing import Tuple
+
 """
 Board logic:
 a. the data-type chosen to represent the board is numpy array.

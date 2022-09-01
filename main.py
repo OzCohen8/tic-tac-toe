@@ -3,7 +3,7 @@ from gameBoard.game_handler import GameHandler
 
 def main():
     game_handler: GameHandler = GameHandler()
-    game_handler.run_game()
+    game_handler.run_games()
 
 
 if __name__ == '__main__':
