@@ -20,7 +20,7 @@ def get_input(input_text: str, validation_func) -> Any:
 class GameHandler:
     def __init__(self):
         self.players: Dict[int, Player] = {}
-        self.board_handler: BoardHandler = BoardHandler()
+        self.board_handler: BoardHandler = BoardHandler(board_size=3)
 
     def __set_players(self, players: List[str]):
         player1: Player = Player(name=players[0].strip(), symbol="X")
@@ -28,10 +28,10 @@ class GameHandler:
             name=players[1].strip() if len(players) > 1 else "The best tic-tac-toe computer",
             symbol="O"
         )
+        self.players = {1: player1, -1: player2}
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
               f' and {player2.name} will be "{player2.symbol}"')
-        self.players = {1: player1, -1: player2}
 
     @staticmethod
     def __roll_who_start():
@@ -76,8 +76,10 @@ class GameHandler:
         return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
 
     def run_game(self):
+        """
+        this function gets and sets the players, starts the game,
+        """
         print("Welcome to Oz's tic-tac-toe game!\nplease enter the players names, (can be one player or two :) )")
-        # getting the players names
         players: str = get_input(
             input_text="Enter players names: ",
             validation_func=is_players_valid

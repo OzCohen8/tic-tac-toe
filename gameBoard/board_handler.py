@@ -12,29 +12,33 @@ b. every board position element is represented by 0 1 or -1 ->
 
 
 class BoardHandler:
-    def __init__(self):
+    def __init__(self, board_size: int):
         """
         creating a new clean tic-tac-toe board
         """
+        self.board_size = board_size
         self.board = None
         self.available_spots = set()
         self.reset_board()
 
-    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol: str) -> bool:
-        is_raw_winner: bool = True
-        is_column_winner: bool = True
-        is_corner: bool = True
-
-        for i in range(3):
-            if self.board[last_spot_raw, i] != last_symbol:
-                is_raw_winner = False
-            if self.board[i, last_spot_column] != last_symbol:
-                is_column_winner = False
-        return is_column_winner or is_raw_winner
+    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int) -> bool:
+        # check win at the raw entered
+        if np.all(self.board[last_spot_raw] == last_symbol__negative_ascii):
+            return True
+        # check win at the column entered
+        trans_arr = self.board.T
+        if np.all(trans_arr[last_spot_column] == last_symbol__negative_ascii):
+            return True
+        # check win at the diagonals
+        if np.all(self.board.diagonal() == last_symbol__negative_ascii):
+            return True
+        if np.all(np.diag(np.fliplr(self.board)) == last_symbol__negative_ascii):
+            return True
 
     def is_spot_valid(self, spot: str) -> None:
         if spot not in set([str(x) for x in range(1, 10)]):
             raise InputException(f"spot {spot} is not valid choice!")
+        spot = int(spot)
         if spot not in self.available_spots:
             raise InputException(f"spot {spot} is already taken!")
         self.available_spots.remove(spot)
@@ -45,19 +49,22 @@ class BoardHandler:
     def select_board_spot_and_check_winner(self, spot: str, symbol: str) -> bool:
         raw: int = (int(spot)-1) // 3
         column: int = (int(spot)-1) % 3
-        self.board[raw, column] = symbol
-        return self.__is_there_winner(raw, column, symbol)
+        symbol__negative_ascii: int = -ord(symbol)
+        self.board[raw, column] = symbol__negative_ascii
+        return self.__is_there_winner(raw, column, symbol__negative_ascii)
 
     def reset_board(self):
-        self.board = np.array([["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]], np.str)
-        self.available_spots = {"1", "2", "3", "4", "5", "6", "7", "8", "9"}
+        self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
+        self.available_spots = {num for num in range(1, self.board_size**2 + 1)}
 
     def __str__(self):
         board_str: str = "  -     -     -  \n"
         for r in range(3):
             for c in range(3):
-                board_str += f"  {self.board[r][c]}  " if c != 1 else f"|  {self.board[r][c]}  |"
+                current_spot = self.board[r][c]
+                if current_spot < 0:
+                    current_spot = chr(current_spot * -1)
+                board_str += f"  {current_spot}  " if c != 1 else f"|  {current_spot}  |"
             board_str += "\n  -     -     -  \n"
         return board_str
-
 
