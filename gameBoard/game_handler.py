@@ -33,9 +33,11 @@ class GameHandler:
         print(f'{self.__players[current_turn].name} you will start!')
         while not self.__play_turn_and_check_winner(current_turn):
             if not self.board_handler.is_empty_spots_left():
+                print(self.board_handler)
                 print("Its a Tie Game")
                 return 0
             current_turn *= -1
+        print(self.board_handler)
         print(f"{self.__players[current_turn].name} Wins!!!")
         return current_turn
 
