@@ -1,4 +1,4 @@
-from gameBoard.game_handler import GameHandler
+from ticTacToe.game_handler import GameHandler
 
 
 def main():

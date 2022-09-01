@@ -1,5 +1,5 @@
 import numpy as np
-from gameBoard.errors import InputException
+from ticTacToe.errors import InputException
 from termcolor import colored
 
 """

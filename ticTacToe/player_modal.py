@@ -1,5 +1,5 @@
-from gameBoard.utils import get_input
-from gameBoard.board_handler import BoardHandler
+from ticTacToe.utils import get_input
+from ticTacToe.board_handler import BoardHandler
 
 
 class Player:

@@ -1,10 +1,10 @@
 from typing import Dict, List, Any
 import random
 
-from gameBoard.vaidators import *
-from gameBoard.board_handler import BoardHandler
-from gameBoard.utils import get_input
-from gameBoard.player_modal import Player, Computer
+from ticTacToe.vaidators import *
+from ticTacToe.board_handler import BoardHandler
+from ticTacToe.utils import get_input
+from ticTacToe.player_modal import Player, Computer
 
 
 class GameHandler:

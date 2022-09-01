@@ -1,4 +1,4 @@
-from gameBoard.errors import InputException
+from ticTacToe.errors import InputException
 
 
 def is_players_valid(players: str):
