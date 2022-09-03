@@ -1,10 +1,9 @@
 import random
 from typing import List
-
 import numpy as np
-from ticTacToe.errors import InputException
 from termcolor import colored
-from game_handler import SYMBOLS
+
+from ticTacToe.errors import InputException
 
 """
 The Board handler is the interface which presents the game board.
@@ -20,6 +19,8 @@ Board logic:
     3.1 numpy handles better ints then strings,
     3.2 they are saved as theirs negative values so in case that will be needed to handle a bigger board the number would never appeare as a spot.
 """
+
+
 
 
 class BoardHandler:
@@ -112,25 +113,35 @@ class BoardHandler:
             4. check if the corners are empty if they are select them
             5. go for the middle
             6. at last take the edges
+        Args:
+            my_symbol: the computer symbol
         """
         available_spots = self.available_spots
 
         if len(self.available_spots) == 8 and 5 in self.available_spots:
             return 5
 
-        # todo: make generics symbols
+        # todo: make generics symbols && need to check first my symbol
+        # todo omprove alg and add minmax alg stage 6
         # Check for possible winning move to take or to block opponents winning move
-        for symbol in SYMBOLS:
+        for symbol in [my_symbol, "X"]:
             for spot in available_spots:
                 next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot
 
-        # if two opposite corners spots are of the opponent, and I have the middle mark an edge
-        opponent_symbol = SYMBOLS[0] if my_symbol != SYMBOLS[0] else SYMBOLS[1]
-        opponent_symbol_negative_ascii = -ord(opponent_symbol)
-        if len(self.available_spots) == 6 and ((self.board[0, 0] == opponent_symbol_negative_ascii and self.board[2, 2]) or (self.board[0,2] == opponent_symbol_negative_ascii and self.board[2,0])):
-            return 2
+        if len(self.available_spots) == 6:
+            # if two opposite corners spots are of the opponent, and I have the middle mark an edge
+            if self.board[0, 0] == self.board[2, 2] or self.board[0,2] == self.board[2,0]:
+                return 2
+            elif self.board[0, 0] < 0:
+                return 9
+            elif self.board[2, 2] < 0:
+                return 1
+            elif self.board[0, 2] < 0:
+                return 7
+            elif self.board[2, 0]:
+                return 3
 
         # Try to take one of the corners
         open_corners: List[int] = []
