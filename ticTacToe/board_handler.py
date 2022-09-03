@@ -130,18 +130,18 @@ class BoardHandler:
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot
 
-        if len(self.available_spots) == 6:
+        if len(self.available_spots) == 6 and self.board[1, 1] == -ord(my_symbol):
             # if two opposite corners spots are of the opponent, and I have the middle mark an edge
-            if self.board[0, 0] == self.board[2, 2] or self.board[0,2] == self.board[2,0]:
+            if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
                 return 2
-            elif self.board[0, 0] < 0:
-                return 9
-            elif self.board[2, 2] < 0:
-                return 1
-            elif self.board[0, 2] < 0:
-                return 7
-            elif self.board[2, 0]:
-                return 3
+            raws, cols = np.where(self.board == -ord("X"))
+            spot_a = [raws[0],cols[0]]
+            spot_b = [raws[1],cols[1]]
+            print()
+            print()
+            print(spot_a)
+            print(spot_b)
+            print()
 
         # Try to take one of the corners
         open_corners: List[int] = []
