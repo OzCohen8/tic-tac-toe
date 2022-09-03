@@ -21,7 +21,6 @@ Board logic:
 """
 
 
-SYMBOLS = "X", "O"
 
 
 class BoardHandler:
@@ -122,18 +121,16 @@ class BoardHandler:
         if len(self.available_spots) == 8 and 5 in self.available_spots:
             return 5
 
-        # todo: make generics symbols
+        # todo: make generics symbols && need to check first my symbol
         # Check for possible winning move to take or to block opponents winning move
-        for symbol in SYMBOLS:
+        for symbol in [my_symbol, "X"]:
             for spot in available_spots:
                 next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot
 
         # if two opposite corners spots are of the opponent, and I have the middle mark an edge
-        opponent_symbol = SYMBOLS[0] if my_symbol != SYMBOLS[0] else SYMBOLS[1]
-        opponent_symbol_negative_ascii = -ord(opponent_symbol)
-        if len(self.available_spots) == 6 and ((self.board[0, 0] == opponent_symbol_negative_ascii and self.board[2, 2]) or (self.board[0,2] == opponent_symbol_negative_ascii and self.board[2,0])):
+        if len(self.available_spots) == 6 and ((self.board[0, 0] == self.board[2, 2]) or (self.board[0,2] == self.board[2,0])):
             return 2
 
         # Try to take one of the corners
