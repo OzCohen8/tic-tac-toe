@@ -1,5 +1,6 @@
 from typing import Dict, List, Any
 import random
+from termcolor import colored
 
 from ticTacToe.vaidators import *
 from ticTacToe.board_handler import BoardHandler
@@ -31,20 +32,27 @@ class GameHandler:
         self.board_handler.reset_board()
         current_turn = self.__roll_who_start()
         print(f'{self.__players[current_turn].name} you will start!')
-        while not self.__play_turn_and_check_winner(current_turn):
-            if not self.board_handler.is_empty_spots_left():
-                print(self.board_handler)
-                print("Its a Tie Game")
-                return 0
+        turn_result: int = self.__play_turn_and_check_winner(current_turn)
+        while not turn_result:
             current_turn *= -1
+            turn_result = self.__play_turn_and_check_winner(current_turn)
+
         print(self.board_handler)
-        print(f"{self.__players[current_turn].name} Wins!!!")
+        if turn_result == 2:
+            print("Its a Tie Game")
+        else:
+            print(f"{self.__players[current_turn].name} Wins!!!")
         return current_turn
 
-    def __play_turn_and_check_winner(self, current_turn: int) -> bool:
+    def __play_turn_and_check_winner(self, current_turn: int) -> int:
         turn_symbol: str = self.__players[current_turn].symbol
         spot: int = self.__players[current_turn].select_next_move(self.board_handler)
         return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
+
+    def show_scores(self):
+        score_str: str = f"{self.__players[0].name}-{colored(self.__players[0].score, 'green')}"
+        score_str += f" : {self.__players[1].name}-{colored(self.__players[1].score, 'blue')}"
+        print(f"The Game Score: {score_str}")
 
     def run_games(self):
         """

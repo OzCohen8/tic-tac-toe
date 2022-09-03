@@ -6,12 +6,18 @@ from ticTacToe.errors import InputException
 from termcolor import colored
 
 """
+The Board handler is the interface which presents the game board.
+this class is responsible for all the board logic and functionalities.
+Board workflow:
+1. new game started- new board need to be created.
+2. in every player move, first a validation is required to check if the spot is free and the input is correct.
+3. then the move is preformed and the board handler checks if there is a winner or a tie.
 Board logic:
-a. the data-type chosen to represent the board is numpy array.
-b. every board position element is represented by 0 1 or -1 ->
-    0- no one selected,
-    1- player one selected (ie X),
-    -1- player two selected (ie )
+1. the data-type chosen to represent the board is numpy array (could be a dict too I wanted to make it a bit mor interesting :) ).
+2. every board position element is represented by a number from 1 to 9 to simplify the spot selections to the end user (player).
+3. the player symbols are abstract to the board class and saved as there negative ascii because:
+    3.1 numpy handles better ints then strings,
+    3.2 they are saved as theirs negative values so in case that will be needed to handle a bigger board the number would never appeare as a spot.
 """
 
 
@@ -19,6 +25,11 @@ class BoardHandler:
     def __init__(self, board_size: int, board=None, available_spots=None):
         """
         creating a new clean tic-tac-toe board
+        Args:
+            board_size: the board raw and column size ( in our case 3 ) -> for more abstract class
+            board: if we want to create a board handler class based on existing board,
+                   we use this functionality in the process of computing the best next move for our computer player
+            available_spots: same as the board args-> the available spots of the existing board
         """
         self.board_size = board_size
         if board is not None and available_spots:
@@ -29,7 +40,14 @@ class BoardHandler:
             self.available_spots = set()
             self.reset_board()
 
-    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int, board=None) -> bool:
+    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int) -> bool:
+        """
+        checks if the current board state contains a winner.
+        Args:
+            last_spot_raw: the last selected spot raw
+            last_spot_column: the last selected spot column
+            last_symbol__negative_ascii: the last spot player symbol
+        """
         # check win at the raw entered
         if np.all(self.board[last_spot_raw] == last_symbol__negative_ascii):
             return True
@@ -47,6 +65,11 @@ class BoardHandler:
         return BoardHandler(self.board_size, np.copy(self.board), self.available_spots.copy())
 
     def is_spot_valid(self, spot: str) -> None:
+        """
+        validate the selected spot input.
+        Args:
+            spot: the selected spot by the player
+        """
         if spot not in set([str(x) for x in range(1, 10)]):
             raise InputException(f"spot {spot} is not valid choice!")
         spot = int(spot)
@@ -56,15 +79,37 @@ class BoardHandler:
     def is_empty_spots_left(self):
         return len(self.available_spots) > 0
 
-    def select_board_spot_and_check_winner(self, spot: int, symbol: str) -> bool:
+    def select_board_spot_and_check_winner(self, spot: int, symbol: str) -> int:
+        """
+        select the spot on the board and checks for a winner
+        Args:
+            spot: the selected spot
+            symbol: the player symbol which we need the spot to be
+        Returns:
+            1 - if there is a winner
+            2 - if the game is tied
+            0 - if the game is still ongoing (0 is false as boolean which be easier to interact on the game handler)
+        """
         raw: int = (spot-1) // 3
         column: int = (spot-1) % 3
         symbol_negative_ascii: int = -ord(symbol)
         self.board[raw, column] = symbol_negative_ascii
         self.available_spots.remove(spot)
-        return self.__is_there_winner(raw, column, symbol_negative_ascii)
+        if self.__is_there_winner(raw, column, symbol_negative_ascii):
+            return 1
+        elif not self.is_empty_spots_left():
+            return 2
+        return 0
 
     def compute_next_best_move(self) -> int:
+        """
+        compute and find the best possible move on the board
+        strategy:
+            1. first check if there is a move that is a winner or to block opponent
+            2. check if the corners are empty if they are select them
+            3. check for the middle
+            4. at last take the edges
+        """
         available_spots = self.available_spots
 
         # todo: make generics symbols
@@ -92,6 +137,9 @@ class BoardHandler:
             return spot
 
     def reset_board(self):
+        """
+        clear the board and available spots for new game
+        """
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
         self.available_spots = {num for num in range(1, self.board_size**2 + 1)}
 
