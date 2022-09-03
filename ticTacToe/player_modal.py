@@ -1,5 +1,6 @@
 from ticTacToe.utils import get_input
 
+
 #todo fix the import isue
 class Player:
     def __init__(self, name: str, symbol: str):
