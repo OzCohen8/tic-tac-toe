@@ -114,6 +114,8 @@ class BoardHandler:
             4. check if the corners are empty if they are select them
             5. go for the middle
             6. at last take the edges
+        Args:
+            my_symbol: the computer symbol
         """
         available_spots = self.available_spots
 
