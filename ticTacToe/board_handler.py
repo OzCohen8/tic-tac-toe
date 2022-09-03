@@ -105,12 +105,16 @@ class BoardHandler:
         """
         compute and find the best possible move on the board
         strategy:
-            1. first check if there is a move that is a winner or to block opponent
+            1. in case only one move made select the center
+            1. check if there is a move that is a winner or to block opponent
             2. check if the corners are empty if they are select them
-            3. check for the middle
+            3. go for the middle
             4. at last take the edges
         """
         available_spots = self.available_spots
+
+        if len(self.available_spots) == 8 and 5 in self.available_spots:
+            return 5
 
         # todo: make generics symbols
         # Check for possible winning move to take or to block opponents winning move

@@ -18,6 +18,12 @@ class Player:
             validation_func=board_handler.is_spot_valid
         ))
 
+    def add_win(self):
+        self.score += 2
+
+    def add_tie(self):
+        self.score += 1
+
 
 class Computer(Player):
     def __init__(self, symbol):
