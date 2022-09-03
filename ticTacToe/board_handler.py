@@ -122,6 +122,7 @@ class BoardHandler:
             return 5
 
         # todo: make generics symbols && need to check first my symbol
+        # todo omprove alg and add minmax alg stage 6
         # Check for possible winning move to take or to block opponents winning move
         for symbol in [my_symbol, "X"]:
             for spot in available_spots:
@@ -129,9 +130,18 @@ class BoardHandler:
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot
 
-        # if two opposite corners spots are of the opponent, and I have the middle mark an edge
-        if len(self.available_spots) == 6 and ((self.board[0, 0] == self.board[2, 2]) or (self.board[0,2] == self.board[2,0])):
-            return 2
+        if len(self.available_spots) == 6:
+            # if two opposite corners spots are of the opponent, and I have the middle mark an edge
+            if self.board[0, 0] == self.board[2, 2] or self.board[0,2] == self.board[2,0]:
+                return 2
+            elif self.board[0, 0] < 0:
+                return 9
+            elif self.board[2, 2] < 0:
+                return 1
+            elif self.board[0, 2] < 0:
+                return 7
+            elif self.board[2, 0]:
+                return 3
 
         # Try to take one of the corners
         open_corners: List[int] = []
