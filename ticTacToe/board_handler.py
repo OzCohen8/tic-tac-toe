@@ -1,10 +1,10 @@
 import random
 from typing import List
-
 import numpy as np
-from ticTacToe.errors import InputException
 from termcolor import colored
-from game_handler import SYMBOLS
+
+from ticTacToe.errors import InputException
+from ticTacToe.game_handler import SYMBOLS
 
 """
 The Board handler is the interface which presents the game board.
