@@ -33,6 +33,6 @@ class Computer(Player):
         if len(board_handler.available_spots) == 9:
             spot: int = random.randint(1, 9)
         else:
-            spot: int = board_handler.compute_next_best_move()
+            spot: int = board_handler.compute_next_best_move(self.symbol)
         print(f'{self.name}, selected spot {spot}"')
         return spot
