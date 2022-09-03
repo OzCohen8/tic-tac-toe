@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import random
 from termcolor import colored
 
@@ -16,6 +16,9 @@ the track on the players turns is implemented by indexing (via a dict) the playe
 it makes the turn pattern really easy; it is just needed to multiple the turn flag by -1 to move to next player
 """
 
+# constants:
+SYMBOLS: Tuple[str, str] = "X", "O"
+
 
 class GameHandler:
     def __init__(self):
@@ -28,11 +31,11 @@ class GameHandler:
         Args:
             players: list contains the players names.
         """
-        player1: Player = Player(name=players[0].strip(), symbol="X")
+        player1: Player = Player(name=players[0].strip(), symbol=SYMBOLS[0])
         if len(players) > 1:
-            player2: Player = Player(name=players[1].strip(), symbol="O")
+            player2: Player = Player(name=players[1].strip(), symbol=SYMBOLS[1])
         else:
-            player2: Computer = Computer(symbol="O")
+            player2: Computer = Computer(symbol=SYMBOLS[1])
         self.__players = {1: player1, -1: player2}
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'

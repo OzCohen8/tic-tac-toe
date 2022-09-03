@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 from ticTacToe.errors import InputException
 from termcolor import colored
+from game_handler import SYMBOLS
 
 """
 The Board handler is the interface which presents the game board.
@@ -101,15 +102,16 @@ class BoardHandler:
             return 2
         return 0
 
-    def compute_next_best_move(self) -> int:
+    def compute_next_best_move(self, my_symbol: str) -> int:
         """
         compute and find the best possible move on the board
         strategy:
             1. in case only one move made select the center
-            1. check if there is a move that is a winner or to block opponent
-            2. check if the corners are empty if they are select them
-            3. go for the middle
-            4. at last take the edges
+            2. check if there is a move that is a winner or to block opponent
+            3. if two opposite corners spots are of the opponent, and I have the middle mark an edge
+            4. check if the corners are empty if they are select them
+            5. go for the middle
+            6. at last take the edges
         """
         available_spots = self.available_spots
 
@@ -118,11 +120,17 @@ class BoardHandler:
 
         # todo: make generics symbols
         # Check for possible winning move to take or to block opponents winning move
-        for symbol in ['O', 'X']:
+        for symbol in SYMBOLS:
             for spot in available_spots:
                 next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot
+
+        # if two opposite corners spots are of the opponent, and I have the middle mark an edge
+        opponent_symbol = SYMBOLS[0] if my_symbol != SYMBOLS[0] else SYMBOLS[1]
+        opponent_symbol_negative_ascii = -ord(opponent_symbol)
+        if len(self.available_spots) == 6 and ((self.board[0, 0] == opponent_symbol_negative_ascii and self.board[2, 2]) or (self.board[0,2] == opponent_symbol_negative_ascii and self.board[2,0])):
+            return 2
 
         # Try to take one of the corners
         open_corners: List[int] = []
