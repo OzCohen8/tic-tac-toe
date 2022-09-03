@@ -1,3 +1,6 @@
+import random
+from typing import List
+
 import numpy as np
 from ticTacToe.errors import InputException
 from termcolor import colored
@@ -13,16 +16,19 @@ b. every board position element is represented by 0 1 or -1 ->
 
 
 class BoardHandler:
-    def __init__(self, board_size: int):
+    def __init__(self, board_size: int, board=None):
         """
         creating a new clean tic-tac-toe board
         """
         self.board_size = board_size
-        self.board = None
-        self.available_spots = set()
-        self.reset_board()
+        if board is not None:
+            self.board = board
+        else:
+            self.board = None
+            self.available_spots = set()
+            self.reset_board()
 
-    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int) -> bool:
+    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int, board=None) -> bool:
         # check win at the raw entered
         if np.all(self.board[last_spot_raw] == last_symbol__negative_ascii):
             return True
@@ -54,6 +60,32 @@ class BoardHandler:
         self.board[raw, column] = symbol_negative_ascii
         return self.__is_there_winner(raw, column, symbol_negative_ascii)
 
+    def compute_next_best_move(self) -> int:
+        available_spots = self.available_spots
+
+        # Check for possible winning move to take or to block opponents winning move
+        for symbol in ['O', 'X']:
+            for spot in available_spots:
+                next_board_handler: BoardHandler = BoardHandler(3, np.copy(self.board))
+                if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
+                    return spot
+
+        # Try to take one of the corners
+        open_corners: List[int] = []
+        for spot in available_spots:
+            if spot in [1, 3, 7, 9]:
+                open_corners.append(spot)
+        if len(open_corners) > 0:
+            return random.choice(open_corners)
+
+        # Try to take the center
+        if 5 in available_spots:
+            return 5
+
+        # Take any edge
+        for spot in available_spots:
+            return spot
+
     def reset_board(self):
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
         self.available_spots = {num for num in range(1, self.board_size**2 + 1)}
@@ -68,4 +100,3 @@ class BoardHandler:
                 board_str += f"  {current_spot}  " if c != 1 else f"|  {current_spot}  |"
             board_str += "\n  -     -     -  \n"
         return board_str
-
