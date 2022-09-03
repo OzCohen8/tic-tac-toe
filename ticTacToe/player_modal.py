@@ -1,5 +1,3 @@
-import random
-
 from ticTacToe.utils import get_input
 from ticTacToe.board_handler import BoardHandler
 
