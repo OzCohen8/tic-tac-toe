@@ -62,7 +62,8 @@ class GameHandler:
         print(self.board_handler)
         # add the score of the game to the players
         if turn_result == 2:
-            map(lambda player: player.add_tie(), self.__players.values())
+            for player in self.__players.values():
+                player.add_tie()
             print("Its a Tie Game")
         else:
             self.__players[current_turn].add_win()
