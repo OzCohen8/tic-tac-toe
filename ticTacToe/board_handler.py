@@ -21,8 +21,6 @@ Board logic:
 """
 
 
-
-
 class BoardHandler:
     def __init__(self, board_size: int, board=None, available_spots=None):
         """
