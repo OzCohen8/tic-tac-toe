@@ -1,19 +1,19 @@
 from ticTacToe.utils import get_input
-from ticTacToe.board_handler import BoardHandler
 
-
+#todo fix the import isue
 class Player:
     def __init__(self, name: str, symbol: str):
         self.name: str = name
         self.symbol: str = symbol
         self.score = 0
 
-    def select_next_move(self, board_handler: BoardHandler) -> int:
+    def select_next_move(self, game_handler) -> int:
         print(f'{self.name}, select where would you like to place "{self.symbol}"')
-        print(board_handler)
+        print(game_handler.board_handler)
         return int(get_input(
             input_text="Enter spot: ",
-            validation_func=board_handler.is_spot_valid
+            validation_func=game_handler.board_handler.is_spot_valid,
+            game_handler=game_handler
         ))
 
     def add_win(self):
@@ -27,7 +27,7 @@ class Computer(Player):
     def __init__(self, symbol):
         super().__init__(name="The best tic-tac-toe computer", symbol=symbol)
 
-    def select_next_move(self, board_handler: BoardHandler) -> int:
-        spot: int = board_handler.compute_next_best_move(self.symbol)
+    def select_next_move(self, game_handler) -> int:
+        spot: int = game_handler.board_handler.compute_next_best_move(self.symbol)
         print(f'{self.name}, selected spot {spot}"')
         return spot

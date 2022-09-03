@@ -40,6 +40,7 @@ class GameHandler:
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
               f' and {player2.name} will be "{player2.symbol}"')
+        print("Note that anytime during the games you can enter showScores to see the score")
 
     @staticmethod
     def __roll_who_start():
@@ -78,7 +79,7 @@ class GameHandler:
             0 - if the game is still ongoing (0 is false as boolean which be easier to interact with)
         """
         turn_symbol: str = self.__players[current_turn].symbol
-        spot: int = self.__players[current_turn].select_next_move(self.board_handler)
+        spot: int = self.__players[current_turn].select_next_move(self)
         return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
 
     def __get_winner(self):
@@ -86,8 +87,9 @@ class GameHandler:
         return players[0] if players[0].score > players[1].score else players[1]
 
     def show_scores(self):
-        score_str: str = f"{self.__players[0].name}-{colored(self.__players[0].score, 'green')}"
-        score_str += f" : {self.__players[1].name}-{colored(self.__players[1].score, 'blue')}"
+        players = list(self.__players.values())
+        score_str: str = f"{players[0].name}-{colored(players[0].score, 'green')}"
+        score_str += f" VS {colored(players[1].score, 'blue')}-{players[1].name}"
         print(f"The Game Score: {score_str}")
 
     def run_games(self):
@@ -104,7 +106,8 @@ class GameHandler:
             self.__run_game()
             another_game: str = get_input(
                 input_text="Want to play another game? (y/n): ",
-                validation_func=is_another_game_valid
+                validation_func=is_another_game_valid,
+                game_handler=self
             )
             if another_game == 'n':
                 winner = self.__get_winner()
