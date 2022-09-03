@@ -4,7 +4,6 @@ import numpy as np
 from termcolor import colored
 
 from ticTacToe.errors import InputException
-from ticTacToe.game_handler import SYMBOLS
 
 """
 The Board handler is the interface which presents the game board.
@@ -20,6 +19,9 @@ Board logic:
     3.1 numpy handles better ints then strings,
     3.2 they are saved as theirs negative values so in case that will be needed to handle a bigger board the number would never appeare as a spot.
 """
+
+
+SYMBOLS = "X", "O"
 
 
 class BoardHandler:
