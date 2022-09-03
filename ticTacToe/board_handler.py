@@ -116,7 +116,9 @@ class BoardHandler:
         Args:
             my_symbol: the computer symbol
         """
-        available_spots = self.available_spots
+
+        if len(self.available_spots) == 9:
+            return random.randint(1, 9)
 
         if len(self.available_spots) == 8 and 5 in self.available_spots:
             return 5
@@ -125,7 +127,7 @@ class BoardHandler:
         # todo omprove alg and add minmax alg stage 6
         # Check for possible winning move to take or to block opponents winning move
         for symbol in [my_symbol, "X"]:
-            for spot in available_spots:
+            for spot in self.available_spots:
                 next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot

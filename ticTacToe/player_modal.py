@@ -30,9 +30,6 @@ class Computer(Player):
         super().__init__(name="The best tic-tac-toe computer", symbol=symbol)
 
     def select_next_move(self, board_handler: BoardHandler) -> int:
-        if len(board_handler.available_spots) == 9:
-            spot: int = random.randint(1, 9)
-        else:
-            spot: int = board_handler.compute_next_best_move(self.symbol)
+        spot: int = board_handler.compute_next_best_move(self.symbol)
         print(f'{self.name}, selected spot {spot}"')
         return spot
