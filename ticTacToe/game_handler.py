@@ -43,7 +43,7 @@ class GameHandler:
 
     def __play_turn_and_check_winner(self, current_turn: int) -> bool:
         turn_symbol: str = self.__players[current_turn].symbol
-        spot: str = self.__players[current_turn].select_next_move(self.board_handler)
+        spot: int = self.__players[current_turn].select_next_move(self.board_handler)
         return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
 
     def run_games(self):

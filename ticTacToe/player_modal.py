@@ -10,13 +10,13 @@ class Player:
         self.symbol: str = symbol
         self.score = 0
 
-    def select_next_move(self, board_handler: BoardHandler):
+    def select_next_move(self, board_handler: BoardHandler) -> int:
         print(f'{self.name}, select where would you like to place "{self.symbol}"')
         print(board_handler)
-        return get_input(
+        return int(get_input(
             input_text="Enter spot: ",
             validation_func=board_handler.is_spot_valid
-        )
+        ))
 
 
 class Computer(Player):

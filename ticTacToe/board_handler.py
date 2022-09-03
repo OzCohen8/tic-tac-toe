@@ -16,13 +16,14 @@ b. every board position element is represented by 0 1 or -1 ->
 
 
 class BoardHandler:
-    def __init__(self, board_size: int, board=None):
+    def __init__(self, board_size: int, board=None, available_spots=None):
         """
         creating a new clean tic-tac-toe board
         """
         self.board_size = board_size
-        if board is not None:
+        if board is not None and available_spots:
             self.board = board
+            self.available_spots = available_spots
         else:
             self.board = None
             self.available_spots = set()
@@ -42,31 +43,35 @@ class BoardHandler:
         if np.all(np.diag(np.fliplr(self.board)) == last_symbol__negative_ascii):
             return True
 
+    def __copy_board_handler(self):
+        return BoardHandler(self.board_size, np.copy(self.board), self.available_spots.copy())
+
     def is_spot_valid(self, spot: str) -> None:
         if spot not in set([str(x) for x in range(1, 10)]):
             raise InputException(f"spot {spot} is not valid choice!")
         spot = int(spot)
         if spot not in self.available_spots:
             raise InputException(f"spot {spot} is already taken!")
-        self.available_spots.remove(spot)
 
     def is_empty_spots_left(self):
         return len(self.available_spots) > 0
 
-    def select_board_spot_and_check_winner(self, spot: str, symbol: str) -> bool:
-        raw: int = (int(spot)-1) // 3
-        column: int = (int(spot)-1) % 3
+    def select_board_spot_and_check_winner(self, spot: int, symbol: str) -> bool:
+        raw: int = (spot-1) // 3
+        column: int = (spot-1) % 3
         symbol_negative_ascii: int = -ord(symbol)
         self.board[raw, column] = symbol_negative_ascii
+        self.available_spots.remove(spot)
         return self.__is_there_winner(raw, column, symbol_negative_ascii)
 
     def compute_next_best_move(self) -> int:
         available_spots = self.available_spots
 
+        # todo: make generics symbols
         # Check for possible winning move to take or to block opponents winning move
         for symbol in ['O', 'X']:
             for spot in available_spots:
-                next_board_handler: BoardHandler = BoardHandler(3, np.copy(self.board))
+                next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
                     return spot
 
