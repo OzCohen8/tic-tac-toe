@@ -145,18 +145,18 @@ class BoardHandler:
 
         # Try to take one of the corners
         open_corners: List[int] = []
-        for spot in available_spots:
+        for spot in self.available_spots:
             if spot in [1, 3, 7, 9]:
                 open_corners.append(spot)
         if len(open_corners) > 0:
             return random.choice(open_corners)
 
         # Try to take the center
-        if 5 in available_spots:
+        if 5 in self.available_spots:
             return 5
 
         # Take any edge
-        for spot in available_spots:
+        for spot in self.available_spots:
             return spot
 
     def reset_board(self):
