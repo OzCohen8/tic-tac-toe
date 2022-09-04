@@ -1,7 +1,8 @@
-from ticTacToe.errors import InputException
 from typing import Any
 import os
+
 from dotenv import load_dotenv
+from ticTacToe.errors import InputException
 
 """
 common use function across the tic-tac-toe module
