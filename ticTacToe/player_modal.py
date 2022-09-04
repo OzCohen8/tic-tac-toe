@@ -1,12 +1,35 @@
 from ticTacToe.utils import get_input
 
+"""
+The players modals.
+those modals represent the players every player must contain a name, symbol and score.
+there are to different types of players:
+    a. human normal Player
+    b. computer player
+a human player will have select next move method that allows him to chose the next spot he want to play
+a computer player will have select next move method that will calculate the best move available and return it.
+"""
 
-# todo fix the import issue
+
 class Player:
     def __init__(self, name: str, symbol: str):
         self.name: str = name
         self.symbol: str = symbol
         self.score = 0
+
+    def select_next_move(self, game_handler) -> int:
+        pass
+
+    def add_win(self):
+        self.score += 2
+
+    def add_tie(self):
+        self.score += 1
+
+
+class HumanPlayer(Player):
+    def __init__(self, name: str, symbol: str):
+        super().__init__(name=name, symbol=symbol)
 
     def select_next_move(self, game_handler) -> int:
         print(f'{self.name}, select where would you like to place "{self.symbol}"')
@@ -17,14 +40,8 @@ class Player:
             game_handler=game_handler
         ))
 
-    def add_win(self):
-        self.score += 2
 
-    def add_tie(self):
-        self.score += 1
-
-
-class Computer(Player):
+class ComputerPlayer(Player):
     def __init__(self, symbol):
         super().__init__(name="The best tic-tac-toe computer", symbol=symbol)
 

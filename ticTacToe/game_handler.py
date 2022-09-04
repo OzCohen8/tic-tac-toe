@@ -5,7 +5,7 @@ from termcolor import colored
 from ticTacToe.vaidators import *
 from ticTacToe.board_handler import BoardHandler
 from ticTacToe.utils import get_input, get_symbols_env
-from ticTacToe.player_modal import Player, Computer
+from ticTacToe.player_modal import Player, HumanPlayer, ComputerPlayer
 
 """
 The Game handler is the interface which handles the game workflow.
@@ -29,11 +29,11 @@ class GameHandler:
             players: list contains the players names.
         """
         symbols = get_symbols_env()
-        player1: Player = Player(name=players[0].strip(), symbol=symbols[0])
+        player1: HumanPlayer = HumanPlayer(name=players[0].strip(), symbol=symbols[0])
         if len(players) > 1:
-            player2: Player = Player(name=players[1].strip(), symbol=symbols[1])
+            player2: HumanPlayer = HumanPlayer(name=players[1].strip(), symbol=symbols[1])
         else:
-            player2: Computer = Computer(symbol=symbols[1])
+            player2: ComputerPlayer = ComputerPlayer(symbol=symbols[1])
         self.__players = {1: player1, -1: player2}
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
