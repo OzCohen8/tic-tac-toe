@@ -14,11 +14,13 @@ Board workflow:
 2. in every player move, first a validation is required to check if the spot is free and the input is correct.
 3. then the move is preformed and the board handler checks if there is a winner or a tie.
 Board logic:
-1. the data-type chosen to represent the board is numpy array (could be a dict too I wanted to make it a bit mor interesting :) ).
-2. every board position element is represented by a number from 1 to 9 to simplify the spot selections to the end user (player).
+1. the data-type chosen to represent the board is numpy array
+   (could be a dict too I wanted to make it a bit mor interesting :) ).
+2. every board position element is represented by a number from 1 to 9 to simplify the spot selections to the player.
 3. the player symbols are abstract to the board class and saved as there negative ascii because:
     3.1 numpy handles better ints then strings,
-    3.2 they are saved as theirs negative values so in case that will be needed to handle a bigger board the number would never appeare as a spot.
+    3.2 they are saved as theirs negative values 
+        so in case that will be needed to handle a bigger board the number would never appear as a spot.
 """
 
 
@@ -145,12 +147,11 @@ class BoardHandler:
             left = True if cols[0] + cols[1] == 1 else False
             if top and left:
                 return 1
-            elif top and not left:
+            if top and not left:
                 return 3
-            elif not top and left:
+            if not top and left:
                 return 7
-            else:
-                return 9
+            return 9
 
         # Try to take one of the corners
         open_corners: List[int] = []
@@ -173,15 +174,15 @@ class BoardHandler:
         clear the board and available spots for new game
         """
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
-        self.available_spots = {num for num in range(1, self.board_size**2 + 1)}
+        self.available_spots = set(range(1, self.board_size**2 + 1))
 
     def __str__(self):
         board_str: str = "  -     -     -  \n"
-        for r in range(3):
-            for c in range(3):
-                current_spot = self.board[r][c]
+        for raw in range(3):
+            for col in range(3):
+                current_spot = self.board[raw][col]
                 if current_spot < 0:
                     current_spot = colored(chr(current_spot * -1), "green")
-                board_str += f"  {current_spot}  " if c != 1 else f"|  {current_spot}  |"
+                board_str += f"  {current_spot}  " if col != 1 else f"|  {current_spot}  |"
             board_str += "\n  -     -     -  \n"
         return board_str
