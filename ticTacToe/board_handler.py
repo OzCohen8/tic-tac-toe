@@ -138,13 +138,16 @@ class BoardHandler:
             if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
                 return 2
             raws, cols = np.where(self.board == -ord(oponoment_symbol))
-            spot_a = [raws[0], cols[0]]
-            spot_b = [raws[1], cols[1]]
-            print()
-            print()
-            print(spot_a)
-            print(spot_b)
-            print()
+            top = True if raws[0] + raws[1] == 1 else False
+            left = True if cols[0] + cols[1] == 1 else False
+            if top and left:
+                return 1
+            elif top and not left:
+                return 3
+            elif not top and left:
+                return 7
+            else:
+                return 9
 
         # Try to take one of the corners
         open_corners: List[int] = []
