@@ -54,17 +54,17 @@ class BoardHandler:
         """
         # check win at the raw entered
         if np.all(self.board[last_spot_raw] == last_symbol__negative_ascii):
-            return last_symbol__negative_ascii
+            return True
         # check win at the column entered
         trans_arr = self.board.T
         if np.all(trans_arr[last_spot_column] == last_symbol__negative_ascii):
-            return last_symbol__negative_ascii
+            return True
         # check win at the diagonals
         if np.all(self.board.diagonal() == last_symbol__negative_ascii):
-            return last_symbol__negative_ascii
+            return True
         if np.all(np.diag(np.fliplr(self.board)) == last_symbol__negative_ascii):
-            return last_symbol__negative_ascii
-        return 0
+            return True
+        return False
 
     def __minimax(self, depth: int, is_maximizing: bool) -> int:
         resualt = self.__is_there_winner()
@@ -87,12 +87,12 @@ class BoardHandler:
                 best_score = min(score, best_score)
             return best_score
 
-    def __undo_spot_selection(self, spot):
+    def undo_spot_selection(self, spot):
         raw: int = (spot-1) // 3
         column: int = (spot-1) % 3
         self.board[raw, column] = spot
 
-    def __get_empty_spots(self):
+    def get_empty_spots(self):
         return np.transpose(np.nonzero(self.board > 0))
 
     def is_spot_valid(self, spot: str) -> None:
