@@ -64,6 +64,7 @@ class ComputerPlayer(Player):
         compute and return the best move on the board
         :param game_handler: the game handler to get the best move on the game board
         """
-        spot: int = game_handler.board_handler.compute_next_best_move(self.symbol)
+        # spot: int = game_handler.board_handler.compute_next_best_move(self.symbol)
+        spot: int = game_handler.board_handler.compute_next_best_move_minimax(self.symbol)
         print(f'{self.name}, selected spot {spot}"')
         return spot

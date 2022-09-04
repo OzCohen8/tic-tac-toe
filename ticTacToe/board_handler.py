@@ -1,10 +1,16 @@
 import random
-from typing import List
+from typing import List, Dict
 import numpy as np
 from termcolor import colored
 
 from ticTacToe.errors import InputException
 from ticTacToe.utils import get_symbols_env
+
+minimax_score: Dict[str, int] = {
+    "X": 1,
+    "O": -1,
+    "tie": 0
+}
 
 
 class BoardHandler:
@@ -25,7 +31,7 @@ class BoardHandler:
             so in case that will be needed to handle a bigger board the number would never appear as a spot.
     """
 
-    def __init__(self, board_size: int, board=None, available_spots=None):
+    def __init__(self, board_size: int):
         """
         creating a new clean tic-tac-toe board
         Args:
@@ -35,15 +41,10 @@ class BoardHandler:
             available_spots: same as the board args-> the available spots of the existing board
         """
         self.board_size = board_size
-        if board is not None and available_spots:
-            self.board = board
-            self.available_spots = available_spots
-        else:
-            self.board = None
-            self.available_spots = set()
-            self.reset_board()
+        self.board = None
+        self.reset_board()
 
-    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int) -> bool:
+    def __is_there_winner(self, last_spot_raw: int, last_spot_column: int, last_symbol__negative_ascii: int) -> int:
         """
         checks if the current board state contains a winner.
         Args:
@@ -53,20 +54,46 @@ class BoardHandler:
         """
         # check win at the raw entered
         if np.all(self.board[last_spot_raw] == last_symbol__negative_ascii):
-            return True
+            return last_symbol__negative_ascii
         # check win at the column entered
         trans_arr = self.board.T
         if np.all(trans_arr[last_spot_column] == last_symbol__negative_ascii):
-            return True
+            return last_symbol__negative_ascii
         # check win at the diagonals
         if np.all(self.board.diagonal() == last_symbol__negative_ascii):
-            return True
+            return last_symbol__negative_ascii
         if np.all(np.diag(np.fliplr(self.board)) == last_symbol__negative_ascii):
-            return True
-        return False
+            return last_symbol__negative_ascii
+        return 0
 
-    def __copy_board_handler(self):
-        return BoardHandler(self.board_size, np.copy(self.board), self.available_spots.copy())
+    def __minimax(self, depth: int, is_maximizing: bool) -> int:
+        resualt = self.__is_there_winner()
+        if resualt:
+            return minimax_score[resualt]
+        if is_maximizing:
+            best_score = float("-inf")
+            for spot in self.available_spots:
+                # set board with spot
+                score = self.__minimax(depth+1, False)
+                # remove the move from board
+                best_score = max(score, best_score)
+            return best_score
+        else:
+            best_score = float("inf")
+            for spot in self.available_spots:
+                # set board with spot
+                score = self.__minimax(depth+1, True)
+                # remove the move from board
+                best_score = min(score, best_score)
+            return best_score
+
+    def __undo_spot_selection(self, spot):
+        raw: int = (spot-1) // 3
+        column: int = (spot-1) % 3
+        self.board[raw, column] = spot
+
+    def __get_empty_spots(self):
+        return np.transpose(np.nonzero(self.board > 0))
 
     def is_spot_valid(self, spot: str) -> None:
         """
@@ -77,14 +104,16 @@ class BoardHandler:
         if spot not in {str(x) for x in range(1, 10)}:
             raise InputException(f"spot {spot} is not valid choice!")
         spot = int(spot)
-        if spot not in self.available_spots:
+        raw: int = (spot-1) // 3
+        column: int = (spot-1) % 3
+        if self.board[raw, column] < 0:
             raise InputException(f"spot {spot} is already taken!")
 
     def is_empty_spots_left(self):
         """
         checks if the board is full (no more empty spots left)
         """
-        return len(self.available_spots) > 0
+        return np.amax(self.board) > 0
 
     def select_board_spot_and_check_winner(self, spot: int, symbol: str) -> int:
         """
@@ -101,84 +130,35 @@ class BoardHandler:
         column: int = (spot-1) % 3
         symbol_negative_ascii: int = -ord(symbol)
         self.board[raw, column] = symbol_negative_ascii
-        self.available_spots.remove(spot)
         if self.__is_there_winner(raw, column, symbol_negative_ascii):
             return 1
         if not self.is_empty_spots_left():
             return 2
         return 0
 
-    def compute_next_best_move(self, my_symbol: str) -> int:
-        """
-        compute and find the best possible move on the board
-        strategy:
-            1. in case only one move made select the center
-            2. check if there is a move that is a winner or to block opponent
-            3. if two opposite corners spots are of the opponent, and I have the middle mark an edge
-            4. if exactly 3 plays where made, and I am in the center
-               place next move in the corner which is in the same raw/column as the opponents moves
-            4. check if the corners are empty if they are select them
-            5. go for the middle
-            6. at last take the edges
-        Args:
-            my_symbol: the computer symbol
-        """
+    def compute_next_best_move_minimax(self, my_symbol: str):
+        max_player = my_symbol  # yourself
+        best_score = float("-inf")
+        best_spot = None
 
-        if len(self.available_spots) == 9:
-            return random.randint(1, 9)
-
-        if len(self.available_spots) == 8 and 5 in self.available_spots:
-            return 5
-
-        # todo improve alg and add minmax alg stage 7
         symbols = get_symbols_env()
         opponent_symbol = symbols[0] if my_symbol != symbols[0] else symbols[1]
-        # Check for possible winning move to take or to block opponents winning move
-        for symbol in [my_symbol, opponent_symbol]:
-            for spot in self.available_spots:
-                next_board_handler: BoardHandler = self.__copy_board_handler()
-                if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
-                    return spot
 
-        if len(self.available_spots) == 6 and self.board[1, 1] == -ord(my_symbol):
-            # if two opposite corners spots are of the opponent, and I have the middle mark an edge
-            if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
-                return 2
-            # if exactly 3 plays where made, and I am in the center
-            # place next move in the corner that in the same raw/column as the opponents moves
-            raws, cols = np.where(self.board == -ord(opponent_symbol))
-            top = raws[0] + raws[1] == 1
-            left = cols[0] + cols[1] == 1
-            if top and left:
-                return 1
-            if top and not left:
-                return 3
-            if not top and left:
-                return 7
-            return 9
-
-        # Try to take one of the corners
-        open_corners: List[int] = []
-        for spot in self.available_spots:
-            if spot in [1, 3, 7, 9]:
-                open_corners.append(spot)
-        if len(open_corners) > 0:
-            return random.choice(open_corners)
-
-        # Try to take the center
-        if 5 in self.available_spots:
-            return 5
-
-        # Take any edge
-        for spot in self.available_spots:
-            return spot
+        for spot in self.__get_empty_spots():
+            # set board with spot
+            score = self.__minimax(0, True)
+            # remove the move from board
+            self.__undo_spot_selection(spot)
+            if score > best_score:
+                best_score = score
+                best_spot = spot
+        return best_spot
 
     def reset_board(self):
         """
         clear the board and available spots for new game
         """
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
-        self.available_spots = set(range(1, self.board_size**2 + 1))
 
     def __str__(self):
         board_str: str = "  -     -     -  \n"
