@@ -6,11 +6,7 @@ from termcolor import colored
 from ticTacToe.errors import InputException
 from ticTacToe.utils import get_symbols_env
 
-minimax_score: Dict[str, int] = {
-    "X": 1,
-    "O": -1,
-    "tie": 0
-}
+SYMBOLS = ("X", "O")
 
 
 class BoardHandler:
@@ -66,38 +62,36 @@ class BoardHandler:
             return True
         return False
 
-    def __minimax(self, maximizing_player_symbol: str, player_symbol, depth: int):
-        max_player = maximizing_player_symbol  # yourself
+    def __minimax(self, maximizing_player_symbol: str, player_symbol, depth: int = 9):
         opponent_symbol = SYMBOLS[0] if player_symbol != SYMBOLS[0] else SYMBOLS[1]
 
-        # first we want to check if the previous move is a winner
-        if state.current_winner == opponent_symbol:
-            return {'position': None, 'score': 1 * (depth + 1) if opponent_symbol == max_player else
-            -1 * (depth + 1)}
-        elif not self.is_empty_spots_left():
-            return {'position': None, 'score': 0}
-
-        if player == max_player:
-            best = {'position': None, 'score': float("-inf")}  # each score should maximize
+        if player_symbol == maximizing_player_symbol:
+            best_move = {'position': None, 'score': float("-inf")}  # each score should maximize
         else:
-            best = {'position': None, 'score': float("inf")}  # each score should minimize
+            best_move = {'position': None, 'score': float("inf")}  # each score should minimize
 
-        for possible_move in board_handler.get_empty_spots():
-            if self.select_board_spot_and_check_winner(possible_move, player)
-            sim_score = self.__minimax(maximizing_player_symbol, opponent_symbol)  # simulate a game after making that move
+        for possible_move in self.get_empty_spots():
+            possible_move = possible_move[0]*3 +possible_move[1] +1
+            print(possible_move)
+            result: int = self.select_board_spot_and_check_winner(possible_move, player_symbol)
+            if result == 1:
+                return {'position': None, 'score': 1 * (depth + 1) if player_symbol == maximizing_player_symbol else
+                -1 * (depth + 1)}
+            elif result == 2:
+                return {'position': None, 'score': 0}
+
+            score = self.__minimax(maximizing_player_symbol, opponent_symbol, depth-1)  # simulate a game after making that move
 
             # undo move
-            board_handler.undo_spot_selection(possible_move)
-            state.current_winner = None
-            sim_score['position'] = possible_move  # this represents the move optimal next move
+            self.undo_spot_selection(possible_move)
+            score['position'] = possible_move  # this represents the move optimal next move
 
-            if player == max_player:  # X is max player
-                if sim_score['score'] > best['score']:
-                    best = sim_score
-            else:
-                if sim_score['score'] < best['score']:
-                    best = sim_score
-        return best
+            if player_symbol == maximizing_player_symbol:  # X is max player
+                if score['score'] > best_move['score']:
+                    best_move = score
+            elif score['score'] < best_move['score']:
+                best_move = score
+        return best_move
 
     def undo_spot_selection(self, spot):
         raw: int = (spot-1) // 3
@@ -149,22 +143,9 @@ class BoardHandler:
         return 0
 
     def compute_next_best_move_minimax(self, my_symbol: str):
-        max_player = my_symbol  # yourself
-        best_score = float("-inf")
-        best_spot = None
-
-        symbols = get_symbols_env()
-        opponent_symbol = symbols[0] if my_symbol != symbols[0] else symbols[1]
-
-        for spot in self.__get_empty_spots():
-            # set board with spot
-            score = self.__minimax(0, True)
-            # remove the move from board
-            self.__undo_spot_selection(spot)
-            if score > best_score:
-                best_score = score
-                best_spot = spot
-        return best_spot
+        if len(self.get_empty_spots()) == 9:
+            return random.randint(1, 9)
+        return self.__minimax(my_symbol, my_symbol)
 
     def reset_board(self):
         """
