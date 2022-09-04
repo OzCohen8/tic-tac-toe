@@ -83,7 +83,7 @@ class ComputerPlayer(Player):
 
     def minimax(self, board_handler: BoardHandler, player, depth: int):
         max_player = self.symbol  # yourself
-        opponent_symbol = SYMBOLS[0] if max_player != SYMBOLS[0] else SYMBOLS[1]
+        opponent_symbol = SYMBOLS[0] if player != SYMBOLS[0] else SYMBOLS[1]
 
         # first we want to check if the previous move is a winner
         if state.current_winner == opponent_symbol:
@@ -98,7 +98,7 @@ class ComputerPlayer(Player):
             best = {'position': None, 'score': float("inf")}  # each score should minimize
 
         for possible_move in board_handler.get_empty_spots():
-            state.make_move(possible_move, player)
+            if board_handler.select_board_spot_and_check_winner(possible_move, player)
             sim_score = self.minimax(board_handler, opponent_symbol)  # simulate a game after making that move
 
             # undo move

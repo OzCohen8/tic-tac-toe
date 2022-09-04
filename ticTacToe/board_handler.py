@@ -66,26 +66,38 @@ class BoardHandler:
             return True
         return False
 
-    def __minimax(self, depth: int, is_maximizing: bool) -> int:
-        resualt = self.__is_there_winner()
-        if resualt:
-            return minimax_score[resualt]
-        if is_maximizing:
-            best_score = float("-inf")
-            for spot in self.available_spots:
-                # set board with spot
-                score = self.__minimax(depth+1, False)
-                # remove the move from board
-                best_score = max(score, best_score)
-            return best_score
+    def __minimax(self, maximizing_player_symbol: str, player_symbol, depth: int):
+        max_player = maximizing_player_symbol  # yourself
+        opponent_symbol = SYMBOLS[0] if player_symbol != SYMBOLS[0] else SYMBOLS[1]
+
+        # first we want to check if the previous move is a winner
+        if state.current_winner == opponent_symbol:
+            return {'position': None, 'score': 1 * (depth + 1) if opponent_symbol == max_player else
+            -1 * (depth + 1)}
+        elif not self.is_empty_spots_left():
+            return {'position': None, 'score': 0}
+
+        if player == max_player:
+            best = {'position': None, 'score': float("-inf")}  # each score should maximize
         else:
-            best_score = float("inf")
-            for spot in self.available_spots:
-                # set board with spot
-                score = self.__minimax(depth+1, True)
-                # remove the move from board
-                best_score = min(score, best_score)
-            return best_score
+            best = {'position': None, 'score': float("inf")}  # each score should minimize
+
+        for possible_move in board_handler.get_empty_spots():
+            if self.select_board_spot_and_check_winner(possible_move, player)
+            sim_score = self.__minimax(maximizing_player_symbol, opponent_symbol)  # simulate a game after making that move
+
+            # undo move
+            board_handler.undo_spot_selection(possible_move)
+            state.current_winner = None
+            sim_score['position'] = possible_move  # this represents the move optimal next move
+
+            if player == max_player:  # X is max player
+                if sim_score['score'] > best['score']:
+                    best = sim_score
+            else:
+                if sim_score['score'] < best['score']:
+                    best = sim_score
+        return best
 
     def undo_spot_selection(self, spot):
         raw: int = (spot-1) // 3
