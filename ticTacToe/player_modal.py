@@ -1,7 +1,7 @@
 from ticTacToe.utils import get_input
 
 
-#todo fix the import isue
+# todo fix the import issue
 class Player:
     def __init__(self, name: str, symbol: str):
         self.name: str = name
