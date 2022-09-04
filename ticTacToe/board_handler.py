@@ -6,25 +6,25 @@ from termcolor import colored
 from ticTacToe.errors import InputException
 from ticTacToe.utils import get_symbols_env
 
-"""
-The Board handler is the interface which presents the game board.
-this class is responsible for all the board logic and functionalities.
-Board workflow:
-1. new game started- new board need to be created.
-2. in every player move, first a validation is required to check if the spot is free and the input is correct.
-3. then the move is preformed and the board handler checks if there is a winner or a tie.
-Board logic:
-1. the data-type chosen to represent the board is numpy array
-   (could be a dict too I wanted to make it a bit mor interesting :) ).
-2. every board position element is represented by a number from 1 to 9 to simplify the spot selections to the player.
-3. the player symbols are abstract to the board class and saved as there negative ascii because:
-    3.1 numpy handles better ints then strings,
-    3.2 they are saved as theirs negative values 
-        so in case that will be needed to handle a bigger board the number would never appear as a spot.
-"""
-
 
 class BoardHandler:
+    """
+    The Board handler is the interface which presents the game board.
+    this class is responsible for all the board logic and functionalities.
+    Board workflow:
+    1. new game started- new board need to be created.
+    2. in every player move, first a validation is required to check if the spot is free and the input is correct.
+    3. then the move is preformed and the board handler checks if there is a winner or a tie.
+    Board logic:
+    1. the data-type chosen to represent the board is numpy array
+       (could be a dict too I wanted to make it a bit mor interesting :) ).
+    2. every board position element is represented by a number from 1 to 9 to simplify the spot selections to the player.
+    3. the player symbols are abstract to the board class and saved as there negative ascii because:
+        3.1 numpy handles better ints then strings,
+        3.2 they are saved as theirs negative values
+            so in case that will be needed to handle a bigger board the number would never appear as a spot.
+    """
+
     def __init__(self, board_size: int, board=None, available_spots=None):
         """
         creating a new clean tic-tac-toe board
@@ -63,6 +63,7 @@ class BoardHandler:
             return True
         if np.all(np.diag(np.fliplr(self.board)) == last_symbol__negative_ascii):
             return True
+        return False
 
     def __copy_board_handler(self):
         return BoardHandler(self.board_size, np.copy(self.board), self.available_spots.copy())
@@ -73,13 +74,16 @@ class BoardHandler:
         Args:
             spot: the selected spot by the player
         """
-        if spot not in set([str(x) for x in range(1, 10)]):
+        if spot not in {str(x) for x in range(1, 10)}:
             raise InputException(f"spot {spot} is not valid choice!")
         spot = int(spot)
         if spot not in self.available_spots:
             raise InputException(f"spot {spot} is already taken!")
 
     def is_empty_spots_left(self):
+        """
+        checks if the board is full (no more empty spots left)
+        """
         return len(self.available_spots) > 0
 
     def select_board_spot_and_check_winner(self, spot: int, symbol: str) -> int:
@@ -100,7 +104,7 @@ class BoardHandler:
         self.available_spots.remove(spot)
         if self.__is_there_winner(raw, column, symbol_negative_ascii):
             return 1
-        elif not self.is_empty_spots_left():
+        if not self.is_empty_spots_left():
             return 2
         return 0
 
@@ -143,8 +147,8 @@ class BoardHandler:
             # if exactly 3 plays where made, and I am in the center
             # place next move in the corner that in the same raw/column as the opponents moves
             raws, cols = np.where(self.board == -ord(opponent_symbol))
-            top = True if raws[0] + raws[1] == 1 else False
-            left = True if cols[0] + cols[1] == 1 else False
+            top = raws[0] + raws[1] == 1
+            left = cols[0] + cols[1] == 1
             if top and left:
                 return 1
             if top and not left:
