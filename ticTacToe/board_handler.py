@@ -126,9 +126,9 @@ class BoardHandler:
 
         # todo improve alg and add minmax alg stage 7
         symbols = get_symbols_env()
-        oponoment_symbol =symbols[0] if my_symbol != symbols[0] else symbols[1]
+        opponent_symbol = symbols[0] if my_symbol != symbols[0] else symbols[1]
         # Check for possible winning move to take or to block opponents winning move
-        for symbol in [my_symbol, oponoment_symbol]:
+        for symbol in [my_symbol, opponent_symbol]:
             for spot in self.available_spots:
                 next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
@@ -140,7 +140,7 @@ class BoardHandler:
                 return 2
             # if exactly 3 plays where made, and I am in the center
             # place next move in the corner that in the same raw/column as the opponents moves
-            raws, cols = np.where(self.board == -ord(oponoment_symbol))
+            raws, cols = np.where(self.board == -ord(opponent_symbol))
             top = True if raws[0] + raws[1] == 1 else False
             left = True if cols[0] + cols[1] == 1 else False
             if top and left:
