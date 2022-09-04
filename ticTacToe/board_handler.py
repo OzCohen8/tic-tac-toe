@@ -4,6 +4,7 @@ import numpy as np
 from termcolor import colored
 
 from ticTacToe.errors import InputException
+from ticTacToe.utils import get_symbols_env
 
 """
 The Board handler is the interface which presents the game board.
@@ -123,8 +124,10 @@ class BoardHandler:
 
         # todo: make generics symbols && need to check first my symbol
         # todo omprove alg and add minmax alg stage 6
+        symbols = get_symbols_env()
+        oponoment_symbol =symbols[0] if my_symbol != symbols[0] else symbols[1]
         # Check for possible winning move to take or to block opponents winning move
-        for symbol in [my_symbol, "X"]:
+        for symbol in [my_symbol, oponoment_symbol]:
             for spot in self.available_spots:
                 next_board_handler: BoardHandler = self.__copy_board_handler()
                 if next_board_handler.select_board_spot_and_check_winner(spot, symbol):
@@ -134,9 +137,9 @@ class BoardHandler:
             # if two opposite corners spots are of the opponent, and I have the middle mark an edge
             if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
                 return 2
-            raws, cols = np.where(self.board == -ord("X"))
-            spot_a = [raws[0],cols[0]]
-            spot_b = [raws[1],cols[1]]
+            raws, cols = np.where(self.board == -ord(oponoment_symbol))
+            spot_a = [raws[0], cols[0]]
+            spot_b = [raws[1], cols[1]]
             print()
             print()
             print(spot_a)

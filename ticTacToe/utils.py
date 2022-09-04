@@ -1,5 +1,6 @@
 from ticTacToe.errors import InputException
 from typing import Any
+import os
 
 
 def get_input(input_text: str, validation_func, game_handler=None) -> Any:
@@ -13,3 +14,9 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
                 game_handler.show_scores()
             else:
                 print("Input exception; " + str(e))
+
+
+# todo: fix symbols env
+def get_symbols_env(symbols=None):
+    symbols = symbols if symbols else ("X", "O")
+    return os.getenv("SYMBOLS", symbols)
