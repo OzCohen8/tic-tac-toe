@@ -3,10 +3,21 @@ from typing import Any
 import os
 from dotenv import load_dotenv
 
+"""
+common use function across the tic-tac-toe module
+"""
+
 load_dotenv()
 
 
 def get_input(input_text: str, validation_func, game_handler=None) -> Any:
+    """
+    generic function to get input from the player, validate it, in case the input is not valid asks for the input again
+    :param input_text: the text that will be presented to the user while asking for the input
+    :param validation_func: the validation which need to check against that input
+    :param game_handler: (optional) the game state handler for the ability to show score any time the program ask for input
+    :return: the input params
+    """
     while True:
         input_args = input(input_text)
         try:
@@ -21,6 +32,10 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
 
 # todo: fix symbols env
 def get_symbols_env(symbols=None):
+    """"
+    get the symbols from the .env file
+    :param symbols: (optional) default symbols to use if the env file is not accessible
+    """
     symbols = symbols if symbols else ("X", "O")
     print(os.environ)
     return os.getenv("SYMBOLS", symbols)
