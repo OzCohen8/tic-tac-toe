@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 import random
 from termcolor import colored
 
@@ -7,17 +7,17 @@ from ticTacToe.board_handler import BoardHandler
 from ticTacToe.utils import get_input, get_symbols_env
 from ticTacToe.player_modal import Player, HumanPlayer, ComputerPlayer
 
-"""
-The Game handler is the interface which handles the game workflow.
-this class is responsible for setting the players, running the games and count the score.
-
-some logic:
-the track on the players turns is implemented by indexing (via a dict) the players with 1 and -1 as keys,
-it makes the turn pattern really easy; it is just needed to multiple the turn flag by -1 to move to next player
-"""
-
 
 class GameHandler:
+    """
+    The Game handler is the interface which handles the game workflow.
+    this class is responsible for setting the players, running the games and count the score.
+
+    some logic:
+    the track on the players turns is implemented by indexing (via a dict) the players with 1 and -1 as keys,
+    it makes the turn pattern really easy; it is just needed to multiple the turn flag by -1 to move to next player
+    """
+
     def __init__(self):
         self.__players: Dict[int, Player] = {}
         self.board_handler: BoardHandler = BoardHandler(board_size=3)
