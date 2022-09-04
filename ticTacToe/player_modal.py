@@ -1,17 +1,11 @@
 from ticTacToe.utils import get_input
 
-"""
-The players modals.
-those modals represent the players every player must contain a name, symbol and score.
-there are to different types of players:
-    a. human normal Player
-    b. computer player
-a human player will have select next move method that allows him to chose the next spot he want to play
-a computer player will have select next move method that will calculate the best move available and return it.
-"""
-
 
 class Player:
+    """
+    The players modals.
+    those modals represent the base player; every player must contain a name, symbol and score.
+    """
     def __init__(self, name: str, symbol: str):
         self.name: str = name
         self.symbol: str = symbol
@@ -34,6 +28,10 @@ class Player:
 
 
 class HumanPlayer(Player):
+    """
+    a Human player is an extension of the base player class, the difference is in the selection of the move method;
+    a human player will have select next move method that allows him to choose the next spot he wishes to play
+    """
     def __init__(self, name: str, symbol: str):
         super().__init__(name=name, symbol=symbol)
 
@@ -53,6 +51,11 @@ class HumanPlayer(Player):
 
 
 class ComputerPlayer(Player):
+    """
+    a Computer player is an extension of the base player class, the difference is in the selection of the move method;
+    a computer player will have select next move method that will calculate the best move available on the board
+    and return it.
+    """
     def __init__(self, symbol):
         super().__init__(name="The best tic-tac-toe computer", symbol=symbol)
 
