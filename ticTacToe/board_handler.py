@@ -109,6 +109,8 @@ class BoardHandler:
             1. in case only one move made select the center
             2. check if there is a move that is a winner or to block opponent
             3. if two opposite corners spots are of the opponent, and I have the middle mark an edge
+            4. if exactly 3 plays where made, and I am in the center
+               place next move in the corner which is in the same raw/column as the opponents moves
             4. check if the corners are empty if they are select them
             5. go for the middle
             6. at last take the edges
@@ -122,8 +124,7 @@ class BoardHandler:
         if len(self.available_spots) == 8 and 5 in self.available_spots:
             return 5
 
-        # todo: make generics symbols && need to check first my symbol
-        # todo omprove alg and add minmax alg stage 6
+        # todo improve alg and add minmax alg stage 7
         symbols = get_symbols_env()
         oponoment_symbol =symbols[0] if my_symbol != symbols[0] else symbols[1]
         # Check for possible winning move to take or to block opponents winning move
@@ -137,6 +138,8 @@ class BoardHandler:
             # if two opposite corners spots are of the opponent, and I have the middle mark an edge
             if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
                 return 2
+            # if exactly 3 plays where made, and I am in the center
+            # place next move in the corner that in the same raw/column as the opponents moves
             raws, cols = np.where(self.board == -ord(oponoment_symbol))
             top = True if raws[0] + raws[1] == 1 else False
             left = True if cols[0] + cols[1] == 1 else False
