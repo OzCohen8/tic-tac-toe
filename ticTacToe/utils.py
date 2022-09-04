@@ -37,4 +37,5 @@ def get_symbols_env(symbols=None):
     :param symbols: (optional) default symbols to use if the env file is not accessible
     """
     symbols = symbols if symbols else ("X", "O")
-    return os.getenv("SYMBOLS", symbols)
+    print(os.environ)
+    return os.getenv("SYMBOLS").split(",") if os.getenv("SYMBOLS", None) else symbols
