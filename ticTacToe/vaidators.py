@@ -1,5 +1,9 @@
 from ticTacToe.errors import InputException
 
+"""
+the general input validations functions
+"""
+
 
 def is_players_valid(players: str):
     if not players or not 0 < len(players.split(",")) < 3:
