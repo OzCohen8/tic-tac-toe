@@ -30,7 +30,6 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
                 print("Input exception; " + str(e))
 
 
-# todo: fix symbols env
 def get_symbols_env(symbols=None):
     """"
     get the symbols from the .env file
