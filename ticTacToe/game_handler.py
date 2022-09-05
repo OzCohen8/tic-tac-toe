@@ -82,6 +82,8 @@ class GameHandler:
 
     def __get_winner(self):
         players: List[Player] = list(self.__players.values())
+        if players[0].score == players[1].score:
+            return False
         return players[0] if players[0].score > players[1].score else players[1]
 
     def show_scores(self):
@@ -109,5 +111,8 @@ class GameHandler:
             )
             if another_game == 'n':
                 winner = self.__get_winner()
-                print(f"{winner.name} won with score of: {winner.score}")
+                if winner:
+                    print(f"{winner.name} won with score of: {winner.score}")
+                else:
+                    print("Its a Tie game!!")
                 break
