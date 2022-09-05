@@ -77,8 +77,8 @@ class GameHandler:
             0 - if the game is still ongoing (0 is false as boolean which be easier to interact with)
         """
         turn_symbol: str = self.__players[current_turn].symbol
-        spot: int = self.__players[current_turn].select_next_move(self)
-        return self.board_handler.select_board_spot_and_check_winner(spot, turn_symbol)
+        raw, col = self.__players[current_turn].select_next_move(self)
+        return self.board_handler.select_board_spot_and_check_winner(raw, col, turn_symbol)
 
     def __get_winner(self):
         players: List[Player] = list(self.__players.values())

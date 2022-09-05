@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 from dotenv import dotenv_values
 from ticTacToe.errors import InputException
 
@@ -31,3 +31,16 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
                 game_handler.show_scores()
             else:
                 print("Input exception; " + str(e))
+
+
+def convert_spot_raw_column(spot: int) -> Tuple[int, int]:
+        """
+        convert the spot to raw and column
+        Args:
+            spot: the spot we want to convert to raw and column
+        """
+        raw: int = (spot-1) // 3
+        column: int = (spot-1) % 3
+        return raw, column
+
+
