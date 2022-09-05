@@ -108,7 +108,7 @@ class BoardHandler:
         Args:
             spot: the spot to roll-back from
         """
-        self.board[spot_row, spot_col] = (spot_col+1)*(spot_row+1)
+        self.board[spot_row, spot_col] = (spot_col+1) + (spot_row*3)
 
     def is_spot_valid(self, spot: str) -> None:
         """

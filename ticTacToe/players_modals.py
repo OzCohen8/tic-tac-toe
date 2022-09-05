@@ -64,7 +64,7 @@ class ComputerPlayer(Player):
         :param game_handler: the game handler to get the best move on the game board
         """
         row, col = game_handler.board_handler.compute_next_best_move(self.symbol)
-        spot = (row+1)*(col+1)
+        spot = (col+1) + (row*3)
         # spot: int = game_handler.board_handler.compute_next_best_move_conditions(self.symbol)
-        print(f'{self.name}, selected spot {spot}"')
+        print(f'{self.name}, selected spot "{spot}"')
         return row, col
