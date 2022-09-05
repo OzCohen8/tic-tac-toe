@@ -109,5 +109,5 @@ class GameHandler:
             )
             if another_game == 'n':
                 winner = self.__get_winner()
-                print(f"Player {winner.name} won with score of: {winner.score}")
+                print(f"{winner.name} won with score of: {winner.score}")
                 break
