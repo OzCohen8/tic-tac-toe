@@ -11,13 +11,14 @@ class BoardHandler:
     The Board handler is the interface which presents the game board.
     this class is responsible for all the board logic and functionalities.
     Board workflow:
-    1. new game started- new board need to be created.
+    1. new game started-new board need to be created.
     2. in every player move, first a validation is required to check if the spot is free and the input is correct.
-    3. then the move is preformed and the board handler checks if there is a winner or a tie.
+    3. then the move is preformed and the board handler checks if the move resulted a win or a tie.
     Board logic:
     1. the data-type chosen to represent the board is numpy array
        (could be a dict too I wanted to make it a bit mor interesting :) ).
-    2. every board position element is represented by a number from 1 to 9 to simplify the spot selections to the player.
+    2. every board position element is represented by a number from 1 to n**2 (n is raw length)
+      to simplify the spot selections to the player.
     3. the player symbols are abstract to the board class and saved as there negative ascii because:
         3.1 numpy handles better ints then strings,
         3.2 they are saved as theirs negative values
@@ -29,9 +30,6 @@ class BoardHandler:
         creating a new clean tic-tac-toe board
         Args:
             board_size: the board raw and column size ( in our case 3 ) -> for more abstract class
-            board: if we want to create a board handler class based on existing board,
-                   we use this functionality in the process of computing the best next move for our computer player
-            available_spots: same as the board args-> the available spots of the existing board
         """
         self.board_size: int = board_size
         self.board = None
@@ -60,6 +58,11 @@ class BoardHandler:
         return False
 
     def __convert_spot_raw_column(self, spot: int) -> Tuple[int, int]:
+        """
+        convert the spot to raw and column
+        Args:
+            spot: the spot we want to convert to raw and column
+        """
         raw: int = (spot-1) // self.board_size
         column: int = (spot-1) % self.board_size
         return raw, column
@@ -71,6 +74,10 @@ class BoardHandler:
         return np.amax(self.board) > 0
 
     def __get_empty_spots(self):
+        """
+        get all empty spots
+        :return: an array containing raw, column of every spot
+        """
         return np.transpose(np.nonzero(self.board > 0))
 
     def __minimax(self, maximizing_player_symbol: str, player_symbol, depth: int = 9):
@@ -106,6 +113,11 @@ class BoardHandler:
         return best_move
 
     def undo_spot_selection(self, spot) -> None:
+        """
+        roll back a move on the board
+        Args:
+            spot: the spot to roll-back from
+        """
         raw, column = self.__convert_spot_raw_column(spot)
         self.board[raw, column] = spot
 
@@ -143,6 +155,12 @@ class BoardHandler:
         return 0
 
     def compute_next_best_move(self, my_symbol: str):
+        """
+        calculate the next best move for the player,
+        in case of the first move select a spot randomly
+        Args:
+            my_symbol: the player symbol
+        """
         if len(self.__get_empty_spots()) == self.board_size**2:
             return random.randint(1, self.board_size**2)
         return self.__minimax(my_symbol, my_symbol)["spot"]
