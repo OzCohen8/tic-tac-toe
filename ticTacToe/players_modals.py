@@ -1,4 +1,5 @@
-from ticTacToe.utils import get_input
+from typing import Tuple
+from ticTacToe.utils import get_input, convert_spot_raw_column
 
 
 class Player:
@@ -31,7 +32,7 @@ class HumanPlayer(Player):
     def __init__(self, name: str, symbol: str):
         super().__init__(name=name, symbol=symbol)
 
-    def select_next_move(self, game_handler) -> int:
+    def select_next_move(self, game_handler) -> Tuple[int, int]:
         """
         print the board and get the next move from the player
         :param game_handler: the game handler class to display the score during the game selection using
@@ -39,11 +40,12 @@ class HumanPlayer(Player):
         """
         print(f'{self.name}, select where would you like to place "{self.symbol}"')
         print(game_handler.board_handler)
-        return int(get_input(
+        spot: int = int(get_input(
             input_text="Enter spot: ",
             validation_func=game_handler.board_handler.is_spot_valid,
             game_handler=game_handler
         ))
+        return convert_spot_raw_column(spot)
 
 
 class ComputerPlayer(Player):
@@ -56,11 +58,12 @@ class ComputerPlayer(Player):
     def __init__(self, symbol):
         super().__init__(name="The best tic-tac-toe computer", symbol=symbol)
 
-    def select_next_move(self, game_handler) -> int:
+    def select_next_move(self, game_handler) -> Tuple[int, int]:
         """
         compute and return the best move on the board
         :param game_handler: the game handler to get the best move on the game board
         """
         spot: int = game_handler.board_handler.compute_next_best_move(self.symbol)
+        # spot: int = game_handler.board_handler.compute_next_best_move_conditions(self.symbol)
         print(f'{self.name}, selected spot {spot}"')
-        return spot
+        return convert_spot_raw_column(spot)
