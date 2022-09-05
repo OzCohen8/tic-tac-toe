@@ -2,7 +2,7 @@ import random
 from typing import Tuple, List
 import numpy as np
 from termcolor import colored
-from ticTacToe.utils import config_parameters, convert_spot_raw_column
+from ticTacToe.utils import config_parameters, convert_spot_row_column
 from ticTacToe.errors import InputException
 
 
@@ -17,7 +17,7 @@ class BoardHandler:
     Board logic:
     1. the data-type chosen to represent the board is numpy array
        (could be a dict too I wanted to make it a bit mor interesting :) ).
-    2. every board position element is represented by a number from 1 to n**2 (n is raw length)
+    2. every board position element is represented by a number from 1 to n**2 (n is row length)
       to simplify the spot selections to the player.
     3. the player symbols are abstract to the board class and saved as there negative ascii because:
         3.1 numpy handles better ints then strings,
@@ -29,22 +29,22 @@ class BoardHandler:
         """
         creating a new clean tic-tac-toe board
         Args:
-            board_size: the board raw and column size ( in our case 3 ) -> for more abstract class
+            board_size: the board row and column size ( in our case 3 ) -> for more abstract class
         """
         self.board_size: int = board_size
         self.board = None
         self.reset_board()
 
-    def __is_there_winner(self, last_raw: int, last_column: int, last_symbol__negative_ascii: int) -> int:
+    def __is_there_winner(self, last_row: int, last_column: int, last_symbol__negative_ascii: int) -> int:
         """
         checks if the current board state contains a winner.
         Args:
-            last_spot_raw: the last selected spot raw
+            last_spot_row: the last selected spot row
             last_spot_column: the last selected spot column
             last_symbol__negative_ascii: the last spot player symbol
         """
-        # check win at the raw entered
-        if np.all(self.board[last_raw] == last_symbol__negative_ascii):
+        # check win at the row entered
+        if np.all(self.board[last_row] == last_symbol__negative_ascii):
             return True
         # check win at the column entered
         trans_arr = self.board.T
@@ -66,7 +66,7 @@ class BoardHandler:
     def __get_empty_spots(self):
         """
         get all empty spots
-        :return: an array containing raw, column of every spot
+        :return: an array containing row, column of every spot
         """
         return np.transpose(np.nonzero(self.board > 0))
 
@@ -79,20 +79,20 @@ class BoardHandler:
             best_move = {'spot': None, 'score': float("inf")}  # each score should minimize
 
         for possible_move in self.__get_empty_spots():
-            raw, col = possible_move[0], possible_move[1]
-            result: int = self.select_board_spot_and_check_winner(raw, col, player_symbol)
+            row, col = possible_move[0], possible_move[1]
+            result: int = self.select_board_spot_and_check_winner(row, col, player_symbol)
             if result == 1:
-                self.__undo_spot_selection(raw, col)
+                self.__undo_spot_selection(row, col)
                 return {'spot': possible_move, 'score': 1 * (depth + 1) if player_symbol == maximizing_player_symbol else
                 -1 * (depth + 1)}
             elif result == 2:
-                self.__undo_spot_selection(raw, col)
+                self.__undo_spot_selection(row, col)
                 return {'spot': possible_move, 'score': 0}
 
             score = self.__minimax(maximizing_player_symbol, opponent_symbol, depth-1)  # simulate a game after making that move
 
             # undo move
-            self.__undo_spot_selection(raw, col)
+            self.__undo_spot_selection(row, col)
             score['spot'] = possible_move  # this represents the move optimal next move
 
             if player_symbol == maximizing_player_symbol:  # X is max player
@@ -102,13 +102,13 @@ class BoardHandler:
                 best_move = score
         return best_move
 
-    def __undo_spot_selection(self, spot_raw: int, spot_col: int) -> None:
+    def __undo_spot_selection(self, spot_row: int, spot_col: int) -> None:
         """
         roll back a move on the board
         Args:
             spot: the spot to roll-back from
         """
-        self.board[spot_raw, spot_col] = (spot_col+1)*(spot_raw+1)
+        self.board[spot_row, spot_col] = (spot_col+1)*(spot_row+1)
 
     def is_spot_valid(self, spot: str) -> None:
         """
@@ -119,15 +119,15 @@ class BoardHandler:
         if spot not in {str(x) for x in range(1, self.board_size**2 + 1)}:
             raise InputException(f"spot {spot} is not valid choice!")
         spot = int(spot)
-        raw, column = convert_spot_raw_column(spot)
-        if self.board[raw, column] < 0:
+        row, column = convert_spot_row_column(spot)
+        if self.board[row, column] < 0:
             raise InputException(f"spot {spot} is already taken!")
 
-    def select_board_spot_and_check_winner(self, raw: int, col: int, symbol: str) -> int:
+    def select_board_spot_and_check_winner(self, row: int, col: int, symbol: str) -> int:
         """
         select the spot on the board and checks for a winner
         Args:
-            raw: the raw of the selected spot
+            row: the row of the selected spot
             col: the column of the selected spot
             symbol: the player symbol which we need the spot to be
         Returns:
@@ -136,14 +136,14 @@ class BoardHandler:
             0 - if the game is still ongoing (0 is false as boolean which be easier to interact on the game handler)
         """
         symbol_negative_ascii: int = -ord(symbol)
-        self.board[raw, col] = symbol_negative_ascii
-        if self.__is_there_winner(raw, col, symbol_negative_ascii):
+        self.board[row, col] = symbol_negative_ascii
+        if self.__is_there_winner(row, col, symbol_negative_ascii):
             return 1
         if not self.__is_empty_spots_left():
             return 2
         return 0
 
-    def compute_next_best_move(self, my_symbol: str) -> int:
+    def compute_next_best_move(self, my_symbol: str) -> Tuple[int,int]:
         """
         calculate the next best move for the player,
         in case of the first move select a spot randomly
@@ -151,7 +151,7 @@ class BoardHandler:
             my_symbol: the player symbol
         """
         if len(self.__get_empty_spots()) == self.board_size**2:
-            return random.randint(1, self.board_size**2)
+            return random.randint(0, self.board_size-1), random.randint(0, self.board_size-1)
         return self.__minimax(my_symbol, my_symbol)["spot"]
 
     def reset_board(self):
@@ -161,17 +161,17 @@ class BoardHandler:
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
 
     def __str__(self):
-        seperate_raw: str = "".join(["  -  " for i in range(self.board_size)])
-        board_str: str = f"{seperate_raw}\n"
-        for raw in range(self.board_size):
+        seperate_row: str = "".join(["  -  " for i in range(self.board_size)])
+        board_str: str = f"{seperate_row}\n"
+        for row in range(self.board_size):
             for col in range(self.board_size):
-                current_spot = self.board[raw][col]
+                current_spot = self.board[row][col]
                 if current_spot < 0:
                     player_symbol = chr(current_spot * -1)
                     color: str = "green" if player_symbol == config_parameters["SYMBOL_A"] else "blue"
                     current_spot = colored(player_symbol, color)
                 board_str += f"  {current_spot}  " if col == 0 else f"|  {current_spot}  "
-            board_str += f"\n{seperate_raw}\n"
+            board_str += f"\n{seperate_row}\n"
         return board_str
 
 
@@ -184,7 +184,7 @@ class BoardHandler:
     #         2. check if there is a move that is a winner or to block opponent
     #         3. if two opposite corners spots are of the opponent, and I have the middle mark an edge
     #         4. if exactly 3 plays where made, and I am in the center
-    #            place next move in the corner which is in the same raw/column as the opponents moves
+    #            place next move in the corner which is in the same row/column as the opponents moves
     #         4. check if the corners are empty if they are select them
     #         5. go for the middle
     #         6. at last take the edges
@@ -212,9 +212,9 @@ class BoardHandler:
     #         if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
     #             return 2
     #         # if exactly 3 plays where made, and I am in the center
-    #         # place next move in the corner that in the same raw/column as the opponents moves
-    #         raws, cols = np.where(self.board == -ord(opponent_symbol))
-    #         top = raws[0] + raws[1] == 1
+    #         # place next move in the corner that in the same row/column as the opponents moves
+    #         rows, cols = np.where(self.board == -ord(opponent_symbol))
+    #         top = rows[0] + rows[1] == 1
     #         left = cols[0] + cols[1] == 1
     #         if top and left:
     #             return 1
