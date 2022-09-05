@@ -1,14 +1,12 @@
+import json
 from typing import Any, Dict, Tuple
-from dotenv import dotenv_values
 from ticTacToe.errors import InputException
 
 """
 common use function across the tic-tac-toe module
 """
-
-config_parameters: Dict[str, Any] = dotenv_values(".env")
-config_parameters = {"SYMBOL_A": "X", "SYMBOL_B": "O", "WIN_POINTS": 2, "TIE_POINTS": 1, "BOARD_ROW_SIZE": 3}
-print(config_parameters)
+with open("game_config.json", "r") as fp:
+    config_parameters: Dict[str, Any] = json.load(fp)
 
 
 def get_input(input_text: str, validation_func, game_handler=None) -> Any:

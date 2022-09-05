@@ -102,10 +102,7 @@ class GameHandler:
         """
         the run function; first gets the players as input set them and run the games until the user wishes to quit
         """
-        print('''
-        Welcome to Oz's tic-tac-toe game!\n
-        please enter the players names seperated by ",", (can be one player or two :) )'''
-              )
+        print('''Welcome to Oz's tic-tac-toe game!\nplease enter the players names seperated by ",", (can be one player or two :) )''')
         players: str = get_input(
             input_text="Enter players names: ",
             validation_func=is_players_valid
