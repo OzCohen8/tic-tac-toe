@@ -7,7 +7,7 @@ common use function across the tic-tac-toe module
 """
 
 config_parameters: Dict[str, Any] = dotenv_values(".env")
-config_parameters = {"SYMBOL_A": "X", "SYMBOL_B": "O", "WIN_POINTS": 2, "TIE_POINTS": 1, "BOARD_RAW_SIZE": 3}
+config_parameters = {"SYMBOL_A": "X", "SYMBOL_B": "O", "WIN_POINTS": 2, "TIE_POINTS": 1, "BOARD_ROW_SIZE": 3}
 print(config_parameters)
 
 
@@ -33,14 +33,14 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
                 print("Input exception; " + str(e))
 
 
-def convert_spot_raw_column(spot: int) -> Tuple[int, int]:
+def convert_spot_row_column(spot: int) -> Tuple[int, int]:
         """
-        convert the spot to raw and column
+        convert the spot to row and column
         Args:
-            spot: the spot we want to convert to raw and column
+            spot: the spot we want to convert to row and column
         """
-        raw: int = (spot-1) // 3
+        row: int = (spot-1) // 3
         column: int = (spot-1) % 3
-        return raw, column
+        return row, column
 
 

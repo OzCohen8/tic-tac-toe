@@ -1,5 +1,5 @@
 from typing import Tuple
-from ticTacToe.utils import get_input, convert_spot_raw_column
+from ticTacToe.utils import get_input, convert_spot_row_column
 
 
 class Player:
@@ -45,7 +45,7 @@ class HumanPlayer(Player):
             validation_func=game_handler.board_handler.is_spot_valid,
             game_handler=game_handler
         ))
-        return convert_spot_raw_column(spot)
+        return convert_spot_row_column(spot)
 
 
 class ComputerPlayer(Player):
@@ -63,7 +63,8 @@ class ComputerPlayer(Player):
         compute and return the best move on the board
         :param game_handler: the game handler to get the best move on the game board
         """
-        spot: int = game_handler.board_handler.compute_next_best_move(self.symbol)
+        row, col = game_handler.board_handler.compute_next_best_move(self.symbol)
+        spot = (row+1)*(col+1)
         # spot: int = game_handler.board_handler.compute_next_best_move_conditions(self.symbol)
         print(f'{self.name}, selected spot {spot}"')
-        return convert_spot_raw_column(spot)
+        return row, col

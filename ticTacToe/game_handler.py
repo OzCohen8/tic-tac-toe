@@ -20,7 +20,7 @@ class GameHandler:
 
     def __init__(self):
         self.__players: Dict[int, Player] = {}
-        self.board_handler: BoardHandler = BoardHandler(config_parameters["BOARD_RAW_SIZE"])
+        self.board_handler: BoardHandler = BoardHandler(config_parameters["BOARD_ROW_SIZE"])
 
     def __set_players(self, players: List[str]) -> None:
         """
@@ -77,8 +77,8 @@ class GameHandler:
             0 - if the game is still ongoing (0 is false as boolean which be easier to interact with)
         """
         turn_symbol: str = self.__players[current_turn].symbol
-        raw, col = self.__players[current_turn].select_next_move(self)
-        return self.board_handler.select_board_spot_and_check_winner(raw, col, turn_symbol)
+        row, col = self.__players[current_turn].select_next_move(self)
+        return self.board_handler.select_board_spot_and_check_winner(row, col, turn_symbol)
 
     def __get_winner(self):
         players: List[Player] = list(self.__players.values())
