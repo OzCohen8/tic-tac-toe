@@ -4,8 +4,8 @@ from termcolor import colored
 
 from ticTacToe.vaidators import *
 from ticTacToe.board_handler import BoardHandler
-from ticTacToe.utils import get_input, get_symbols_env
-from ticTacToe.player_modal import Player, HumanPlayer, ComputerPlayer
+from ticTacToe.utils import get_input, config_parameters
+from ticTacToe.players_modals import Player, HumanPlayer, ComputerPlayer
 
 
 class GameHandler:
@@ -20,7 +20,7 @@ class GameHandler:
 
     def __init__(self):
         self.__players: Dict[int, Player] = {}
-        self.board_handler: BoardHandler = BoardHandler(board_size=3)
+        self.board_handler: BoardHandler = BoardHandler(config_parameters["BOARD_RAW_SIZE"])
 
     def __set_players(self, players: List[str]) -> None:
         """
@@ -28,12 +28,11 @@ class GameHandler:
         Args:
             players: list contains the players names.
         """
-        symbols = get_symbols_env()
-        player1: HumanPlayer = HumanPlayer(name=players[0].strip(), symbol=symbols[0])
+        player1: HumanPlayer = HumanPlayer(name=players[0].strip(), symbol=config_parameters["SYMBOL_A"])
         if len(players) > 1:
-            player2: HumanPlayer = HumanPlayer(name=players[1].strip(), symbol=symbols[1])
+            player2: HumanPlayer = HumanPlayer(name=players[1].strip(), symbol=config_parameters["SYMBOL_B"])
         else:
-            player2: ComputerPlayer = ComputerPlayer(symbol=symbols[1])
+            player2: ComputerPlayer = ComputerPlayer(symbol=config_parameters["SYMBOL_B"])
         self.__players = {1: player1, -1: player2}
         print(f'Welcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
@@ -61,10 +60,10 @@ class GameHandler:
         # add the score of the game to the players
         if turn_result == 2:
             for player in self.__players.values():
-                player.add_tie()
+                player.add_score(config_parameters["TIE_POINTS"])
             print("Its a Tie Game")
         else:
-            self.__players[current_turn].add_win()
+            self.__players[current_turn].add_score(config_parameters["WIN_POINTS"])
             print(f"{self.__players[current_turn].name} Wins!!!")
 
     def __play_turn_and_check_winner(self, current_turn: int) -> int:

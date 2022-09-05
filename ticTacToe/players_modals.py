@@ -1,10 +1,4 @@
-import random
-
-from ticTacToe.board_handler import BoardHandler
 from ticTacToe.utils import get_input
-from ticTacToe.utils import get_symbols_env
-
-SYMBOLS = get_symbols_env()
 
 
 class Player:
@@ -21,17 +15,11 @@ class Player:
     def select_next_move(self, game_handler) -> int:
         pass
 
-    def add_win(self):
+    def add_score(self, score: int) -> None:
         """
         in case of a win increase the player score by 2
         """
-        self.score += 2
-
-    def add_tie(self):
-        """
-        in case of a tie increase the player score by 1
-        """
-        self.score += 1
+        self.score += score
 
 
 class HumanPlayer(Player):

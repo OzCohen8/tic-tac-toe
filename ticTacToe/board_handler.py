@@ -1,12 +1,9 @@
 import random
-from typing import List, Dict
+from typing import Tuple
 import numpy as np
 from termcolor import colored
-
+from ticTacToe.utils import config_parameters
 from ticTacToe.errors import InputException
-from ticTacToe.utils import get_symbols_env
-
-SYMBOLS = ("X", "O")
 
 
 class BoardHandler:
@@ -36,7 +33,7 @@ class BoardHandler:
                    we use this functionality in the process of computing the best next move for our computer player
             available_spots: same as the board args-> the available spots of the existing board
         """
-        self.board_size = board_size
+        self.board_size: int = board_size
         self.board = None
         self.reset_board()
 
@@ -62,16 +59,30 @@ class BoardHandler:
             return True
         return False
 
+    def __convert_spot_raw_column(self, spot: int) -> Tuple[int, int]:
+        raw: int = (spot-1) // self.board_size
+        column: int = (spot-1) % self.board_size
+        return raw, column
+
+    def __is_empty_spots_left(self) -> bool:
+        """
+        checks if the board is full (no more empty spots left)
+        """
+        return np.amax(self.board) > 0
+
+    def __get_empty_spots(self):
+        return np.transpose(np.nonzero(self.board > 0))
+
     def __minimax(self, maximizing_player_symbol: str, player_symbol, depth: int = 9):
-        opponent_symbol = SYMBOLS[0] if player_symbol != SYMBOLS[0] else SYMBOLS[1]
+        opponent_symbol = config_parameters["SYMBOL_A"] if player_symbol != config_parameters["SYMBOL_A"] else config_parameters["SYMBOL_B"]
 
         if player_symbol == maximizing_player_symbol:
             best_move = {'spot': None, 'score': float("-inf")}  # each score should maximize
         else:
             best_move = {'spot': None, 'score': float("inf")}  # each score should minimize
 
-        for possible_move in self.get_empty_spots():
-            possible_move = possible_move[0]*3 +possible_move[1] +1
+        for possible_move in self.__get_empty_spots():
+            possible_move = possible_move[0]*3 + possible_move[1] + 1
             result: int = self.select_board_spot_and_check_winner(possible_move, player_symbol)
             if result == 1:
                 self.undo_spot_selection(possible_move)
@@ -94,13 +105,9 @@ class BoardHandler:
                 best_move = score
         return best_move
 
-    def undo_spot_selection(self, spot):
-        raw: int = (spot-1) // 3
-        column: int = (spot-1) % 3
+    def undo_spot_selection(self, spot) -> None:
+        raw, column = self.__convert_spot_raw_column(spot)
         self.board[raw, column] = spot
-
-    def get_empty_spots(self):
-        return np.transpose(np.nonzero(self.board > 0))
 
     def is_spot_valid(self, spot: str) -> None:
         """
@@ -108,19 +115,12 @@ class BoardHandler:
         Args:
             spot: the selected spot by the player
         """
-        if spot not in {str(x) for x in range(1, 10)}:
+        if spot not in {str(x) for x in range(1, self.board_size**2 + 1)}:
             raise InputException(f"spot {spot} is not valid choice!")
         spot = int(spot)
-        raw: int = (spot-1) // 3
-        column: int = (spot-1) % 3
+        raw, column = self.__convert_spot_raw_column(spot)
         if self.board[raw, column] < 0:
             raise InputException(f"spot {spot} is already taken!")
-
-    def is_empty_spots_left(self):
-        """
-        checks if the board is full (no more empty spots left)
-        """
-        return np.amax(self.board) > 0
 
     def select_board_spot_and_check_winner(self, spot: int, symbol: str) -> int:
         """
@@ -133,19 +133,18 @@ class BoardHandler:
             2 - if the game is tied
             0 - if the game is still ongoing (0 is false as boolean which be easier to interact on the game handler)
         """
-        raw: int = (spot-1) // 3
-        column: int = (spot-1) % 3
+        raw, column = self.__convert_spot_raw_column(spot)
         symbol_negative_ascii: int = -ord(symbol)
         self.board[raw, column] = symbol_negative_ascii
         if self.__is_there_winner(raw, column, symbol_negative_ascii):
             return 1
-        if not self.is_empty_spots_left():
+        if not self.__is_empty_spots_left():
             return 2
         return 0
 
     def compute_next_best_move(self, my_symbol: str):
-        if len(self.get_empty_spots()) == 9:
-            return random.randint(1, 9)
+        if len(self.__get_empty_spots()) == self.board_size**2:
+            return random.randint(1, self.board_size**2)
         return self.__minimax(my_symbol, my_symbol)["spot"]
 
     def reset_board(self):
@@ -155,12 +154,15 @@ class BoardHandler:
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
 
     def __str__(self):
-        board_str: str = "  -     -     -  \n"
-        for raw in range(3):
-            for col in range(3):
+        seperate_raw: str = "".join(["  -  " for i in range(self.board_size)])
+        board_str: str = f"{seperate_raw}\n"
+        for raw in range(self.board_size):
+            for col in range(self.board_size):
                 current_spot = self.board[raw][col]
                 if current_spot < 0:
-                    current_spot = colored(chr(current_spot * -1), "green")
-                board_str += f"  {current_spot}  " if col != 1 else f"|  {current_spot}  |"
-            board_str += "\n  -     -     -  \n"
+                    player_symbol = chr(current_spot * -1)
+                    color: str = "green" if player_symbol == config_parameters["SYMBOL_A"] else "blue"
+                    current_spot = colored(player_symbol, color)
+                board_str += f"  {current_spot}  " if col == 0 else f"|  {current_spot}  "
+            board_str += f"\n{seperate_raw}\n"
         return board_str
