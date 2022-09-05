@@ -18,7 +18,7 @@ class Player:
 
     def add_score(self, score: int) -> None:
         """
-        in case of a win increase the player score by 2
+        a method to increase player score by given value
         """
         self.score += score
 
@@ -35,8 +35,8 @@ class HumanPlayer(Player):
     def select_next_move(self, game_handler) -> Tuple[int, int]:
         """
         print the board and get the next move from the player
-        :param game_handler: the game handler class to display the score during the game selection using
-                showScores command
+        Args:
+             game_handler: the game state used to display the score during the game using showScores command
         """
         print(f'{self.name}, select where would you like to place "{self.symbol}"')
         print(game_handler.board_handler)
@@ -61,7 +61,8 @@ class ComputerPlayer(Player):
     def select_next_move(self, game_handler) -> Tuple[int, int]:
         """
         compute and return the best move on the board
-        :param game_handler: the game handler to get the best move on the game board
+        Args:
+             game_handler: the game handler to get the best move on the game board
         """
         row, col = game_handler.board_handler.compute_next_best_move(self.symbol)
         spot = (col+1) + (row*3)

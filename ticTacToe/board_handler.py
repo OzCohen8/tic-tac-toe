@@ -9,14 +9,14 @@ from ticTacToe.errors import InputException
 class BoardHandler:
     """
     The Board handler is the interface which presents the game board.
-    this class is responsible for all the board logic and functionalities.
+    his responsibilities mainly include; the board logic and functionalities.
     Board workflow:
     1. new game started-new board need to be created.
-    2. in every player move, first a validation is required to check if the spot is free and the input is correct.
+    2. after player move, first a validation is required to check if the spot is free and the input is correct.
     3. then the move is preformed and the board handler checks if the move resulted a win or a tie.
     Board logic:
     1. the data-type chosen to represent the board is numpy array
-       (could be a dict too I wanted to make it a bit mor interesting :) ).
+       (could be a dict or a list too I wanted to make it a bit mor interesting :) ).
     2. every board position element is represented by a number from 1 to n**2 (n is row length)
       to simplify the spot selections to the player.
     3. the player symbols are abstract to the board class and saved as there negative ascii because:
@@ -71,20 +71,29 @@ class BoardHandler:
         return np.transpose(np.nonzero(self.board > 0))
 
     def __minimax(self, maximizing_player_symbol: str, player_symbol, depth: int = 9):
+        """
+        the minimax algorithm. used in our case to calc the best available move on the board.
+        Args:
+            maximizing_player_symbol: the symbol of the computer player (should win)
+            player_symbol: the current players turn symbol
+            depth: keeps track how far are we in the minimax alg
+        """
         opponent_symbol = config_parameters["SYMBOL_A"] if player_symbol != config_parameters["SYMBOL_A"] else config_parameters["SYMBOL_B"]
 
         if player_symbol == maximizing_player_symbol:
-            best_move = {'spot': None, 'score': float("-inf")}  # each score should maximize
+            best_move = {'spot': None, 'score': float("-inf")}  # if it's the computer we are searching for the max score
         else:
-            best_move = {'spot': None, 'score': float("inf")}  # each score should minimize
+            best_move = {'spot': None, 'score': float("inf")}  # if it's  not the computer we are searching for the min score (negative)
 
         for possible_move in self.__get_empty_spots():
             row, col = possible_move[0], possible_move[1]
             result: int = self.select_board_spot_and_check_winner(row, col, player_symbol)
             if result == 1:
                 self.__undo_spot_selection(row, col)
-                return {'spot': possible_move, 'score': 1 * (depth + 1) if player_symbol == maximizing_player_symbol else
-                -1 * (depth + 1)}
+                return {
+                    'spot': possible_move,
+                    'score': 1 * (depth + 1) if player_symbol == maximizing_player_symbol else -1 * (depth + 1)
+                }
             elif result == 2:
                 self.__undo_spot_selection(row, col)
                 return {'spot': possible_move, 'score': 0}
@@ -93,9 +102,10 @@ class BoardHandler:
 
             # undo move
             self.__undo_spot_selection(row, col)
-            score['spot'] = possible_move  # this represents the move optimal next move
+            # setting the spot which maybe better than the old best one
+            score['spot'] = possible_move
 
-            if player_symbol == maximizing_player_symbol:  # X is max player
+            if player_symbol == maximizing_player_symbol:
                 if score['score'] > best_move['score']:
                     best_move = score
             elif score['score'] < best_move['score']:
@@ -106,7 +116,8 @@ class BoardHandler:
         """
         roll back a move on the board
         Args:
-            spot: the spot to roll-back from
+            spot_row: the spot row to roll-back from
+            spot_col: the spot column to roll-back from
         """
         self.board[spot_row, spot_col] = (spot_col+1) + (spot_row*3)
 
@@ -161,8 +172,8 @@ class BoardHandler:
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
 
     def __str__(self):
-        seperate_row: str = "".join(["  -  " for i in range(self.board_size)])
-        board_str: str = f"{seperate_row}\n"
+        separate_row: str = "".join(["  -  " for i in range(self.board_size)])
+        board_str: str = f"{separate_row}\n"
         for row in range(self.board_size):
             for col in range(self.board_size):
                 current_spot = self.board[row][col]
@@ -171,7 +182,7 @@ class BoardHandler:
                     color: str = "green" if player_symbol == config_parameters["SYMBOL_A"] else "blue"
                     current_spot = colored(player_symbol, color)
                 board_str += f"  {current_spot}  " if col == 0 else f"|  {current_spot}  "
-            board_str += f"\n{seperate_row}\n"
+            board_str += f"\n{separate_row}\n"
         return board_str
 
 

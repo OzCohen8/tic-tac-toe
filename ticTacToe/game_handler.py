@@ -15,7 +15,7 @@ class GameHandler:
 
     some logic:
     the track on the players turns is implemented by indexing (via a dict) the players with 1 and -1 as keys,
-    it makes the turn pattern really easy; it is just needed to multiple the turn flag by -1 to move to next player
+    it makes the turn pattern really easy; it is just needed to multiply the turn flag by -1 to move to next player
     """
 
     def __init__(self):
@@ -43,7 +43,7 @@ class GameHandler:
     def __roll_who_start():
         return random.choice([1, -1])
 
-    def __run_game(self) -> None:
+    def __run_one_game(self) -> None:
         """
         a function which is responsible on the workflow of a single game
         """
@@ -81,12 +81,18 @@ class GameHandler:
         return self.board_handler.select_board_spot_and_check_winner(row, col, turn_symbol)
 
     def __get_winner(self):
+        """
+        gets the player with the bigger score if score are equal returns False
+        """
         players: List[Player] = list(self.__players.values())
         if players[0].score == players[1].score:
             return False
         return players[0] if players[0].score > players[1].score else players[1]
 
     def show_scores(self):
+        """
+        a method to print the current game score
+        """
         players = list(self.__players.values())
         score_str: str = f"{players[0].name}-{colored(players[0].score, 'green')}"
         score_str += f" VS {colored(players[1].score, 'blue')}-{players[1].name}"
@@ -96,14 +102,17 @@ class GameHandler:
         """
         the run function; first gets the players as input set them and run the games until the user wishes to quit
         """
-        print("Welcome to Oz's tic-tac-toe game!\nplease enter the players names, (can be one player or two :) )")
+        print('''
+        Welcome to Oz's tic-tac-toe game!\n
+        please enter the players names seperated by ",", (can be one player or two :) )'''
+              )
         players: str = get_input(
             input_text="Enter players names: ",
             validation_func=is_players_valid
         )
         self.__set_players(players.split(","))
         while True:
-            self.__run_game()
+            self.__run_one_game()
             another_game: str = get_input(
                 input_text="Want to play another game? (y/n): ",
                 validation_func=is_another_game_valid,

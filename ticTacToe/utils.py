@@ -34,13 +34,13 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
 
 
 def convert_spot_row_column(spot: int) -> Tuple[int, int]:
-        """
-        convert the spot to row and column
-        Args:
-            spot: the spot we want to convert to row and column
-        """
-        row: int = (spot-1) // 3
-        column: int = (spot-1) % 3
-        return row, column
+    """
+    convert the spot(int from 1-9) to row and column on the board
+    Args:
+        spot: the spot we want to convert to row and column
+    """
+    row: int = (spot-1) // 3
+    column: int = (spot-1) % 3
+    return row, column
 
 
