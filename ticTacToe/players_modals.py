@@ -6,6 +6,7 @@ class Player:
     The players modals.
     those modals represent the base player; every player must contain a name, symbol and score.
     """
+
     def __init__(self, name: str, symbol: str):
         self.name: str = name
         self.symbol: str = symbol
@@ -14,17 +15,11 @@ class Player:
     def select_next_move(self, game_handler) -> int:
         pass
 
-    def add_win(self):
+    def add_score(self, score: int) -> None:
         """
         in case of a win increase the player score by 2
         """
-        self.score += 2
-
-    def add_tie(self):
-        """
-        in case of a tie increase the player score by 1
-        """
-        self.score += 1
+        self.score += score
 
 
 class HumanPlayer(Player):
@@ -32,6 +27,7 @@ class HumanPlayer(Player):
     a Human player is an extension of the base player class, the difference is in the selection of the move method;
     a human player will have select next move method that allows him to choose the next spot he wishes to play
     """
+
     def __init__(self, name: str, symbol: str):
         super().__init__(name=name, symbol=symbol)
 
@@ -56,6 +52,7 @@ class ComputerPlayer(Player):
     a computer player will have select next move method that will calculate the best move available on the board
     and return it.
     """
+
     def __init__(self, symbol):
         super().__init__(name="The best tic-tac-toe computer", symbol=symbol)
 
