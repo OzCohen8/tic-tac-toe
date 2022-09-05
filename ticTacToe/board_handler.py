@@ -92,17 +92,17 @@ class BoardHandler:
             possible_move = possible_move[0]*3 + possible_move[1] + 1
             result: int = self.select_board_spot_and_check_winner(possible_move, player_symbol)
             if result == 1:
-                self.undo_spot_selection(possible_move)
+                self.__undo_spot_selection(possible_move)
                 return {'spot': possible_move, 'score': 1 * (depth + 1) if player_symbol == maximizing_player_symbol else
                 -1 * (depth + 1)}
             elif result == 2:
-                self.undo_spot_selection(possible_move)
+                self.__undo_spot_selection(possible_move)
                 return {'spot': possible_move, 'score': 0}
 
             score = self.__minimax(maximizing_player_symbol, opponent_symbol, depth-1)  # simulate a game after making that move
 
             # undo move
-            self.undo_spot_selection(possible_move)
+            self.__undo_spot_selection(possible_move)
             score['spot'] = possible_move  # this represents the move optimal next move
 
             if player_symbol == maximizing_player_symbol:  # X is max player
@@ -112,7 +112,7 @@ class BoardHandler:
                 best_move = score
         return best_move
 
-    def undo_spot_selection(self, spot) -> None:
+    def __undo_spot_selection(self, spot) -> None:
         """
         roll back a move on the board
         Args:
