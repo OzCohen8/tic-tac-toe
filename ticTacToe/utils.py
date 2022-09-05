@@ -1,14 +1,14 @@
-from typing import Any
-import os
-
-from dotenv import load_dotenv
+from typing import Any, Dict
+from dotenv import dotenv_values
 from ticTacToe.errors import InputException
 
 """
 common use function across the tic-tac-toe module
 """
 
-load_dotenv()
+config_parameters: Dict[str, Any] = dotenv_values(".env")
+config_parameters = {"SYMBOL_A": "X", "SYMBOL_B": "O", "WIN_POINTS": 2, "TIE_POINTS": 1, "BOARD_RAW_SIZE": 3}
+print(config_parameters)
 
 
 def get_input(input_text: str, validation_func, game_handler=None) -> Any:
@@ -29,12 +29,3 @@ def get_input(input_text: str, validation_func, game_handler=None) -> Any:
                 game_handler.show_scores()
             else:
                 print("Input exception; " + str(e))
-
-
-def get_symbols_env(symbols=None):
-    """"
-    get the symbols from the .env file
-    :param symbols: (optional) default symbols to use if the env file is not accessible
-    """
-    symbols = symbols if symbols else ("X", "O")
-    return os.getenv("SYMBOLS").split(",") if os.getenv("SYMBOLS", None) else symbols
