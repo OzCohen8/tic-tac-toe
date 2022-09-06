@@ -1,7 +1,7 @@
-#Tic Tac Toe
+# Tic Tac Toe
 Welcome!
 
-###Installation:
+### Installation:
 
 open a terminal in the tic-tac-toe main directory
 enter the following commands:
