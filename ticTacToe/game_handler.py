@@ -34,10 +34,10 @@ class GameHandler:
         else:
             player2: ComputerPlayer = ComputerPlayer(symbol=config_parameters["SYMBOL_B"])
         self.__players = {1: player1, -1: player2}
-        print(f'Welcome {player1.name} and {player2.name} lets start\n'
+        print(f'\nWelcome {player1.name} and {player2.name} lets start\n'
               f'{player1.name} you will be "{player1.symbol}"'
               f' and {player2.name} will be "{player2.symbol}"')
-        print("Note that anytime during the games you can enter showScores to see the score")
+        print("Note that anytime during the games you can enter showScores to see the score\n")
 
     @staticmethod
     def __roll_who_start():

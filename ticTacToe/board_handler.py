@@ -154,7 +154,7 @@ class BoardHandler:
             return 2
         return 0
 
-    def compute_next_best_move(self, my_symbol: str) -> Tuple[int,int]:
+    def compute_next_best_move(self, my_symbol: str) -> Tuple[int, int]:
         """
         calculate the next best move for the player,
         in case of the first move select a spot randomly
@@ -165,6 +165,25 @@ class BoardHandler:
             return random.randint(0, self.board_size-1), random.randint(0, self.board_size-1)
         return self.__minimax(my_symbol, my_symbol)["spot"]
 
+    def compute_next_best_move_conditions(self, my_symbol: str) -> Tuple[int, int]:
+        """
+        it is possible also to calc the next best move following those conditions
+
+        compute and find the best possible move on the board
+        strategy:
+            1. in case only one move made select the center
+            2. check if there is a move that is a winner or to block opponent
+            3. if two opposite corners spots are of the opponent, and I have the middle mark an edge
+            4. if exactly 3 plays where made, and I am in the center
+               place next move in the corner which is in the same row/column as the opponents moves
+            4. check if the corners are empty if they are select them
+            5. go for the middle
+            6. at last take the edges
+        Args:
+            my_symbol: the computer symbol
+        """
+        pass
+
     def reset_board(self):
         """
         clear the board and available spots for new game
@@ -172,7 +191,7 @@ class BoardHandler:
         self.board = np.arange(1, self.board_size**2 + 1).reshape(self.board_size, self.board_size)
 
     def __str__(self):
-        separate_row: str = "".join(["  -  " for i in range(self.board_size)])
+        separate_row: str = "".join(["  -   " for i in range(self.board_size)])
         board_str: str = f"{separate_row}\n"
         for row in range(self.board_size):
             for col in range(self.board_size):
@@ -186,68 +205,4 @@ class BoardHandler:
         return board_str
 
 
-
-    # def compute_next_best_move_conditions(self, my_symbol: str) -> int:
-    #     """
-    #     compute and find the best possible move on the board
-    #     strategy:
-    #         1. in case only one move made select the center
-    #         2. check if there is a move that is a winner or to block opponent
-    #         3. if two opposite corners spots are of the opponent, and I have the middle mark an edge
-    #         4. if exactly 3 plays where made, and I am in the center
-    #            place next move in the corner which is in the same row/column as the opponents moves
-    #         4. check if the corners are empty if they are select them
-    #         5. go for the middle
-    #         6. at last take the edges
-    #     Args:
-    #         my_symbol: the computer symbol
-    #     """
-    #     available_spots = self.__get_empty_spots()
-    #     if len(available_spots) == 9:
-    #         return random.randint(1, 9)
-    #
-    #     if len(available_spots) == 8 and 5 in available_spots:
-    #         return 5
-    #
-    #     opponent_symbol = config_parameters["SYMBOL_A"] if my_symbol != config_parameters["SYMBOL_A"] else config_parameters["SYMBOL_B"]
-    #     # Check for possible winning move to take or to block opponents winning move
-    #     for symbol in [my_symbol, opponent_symbol]:
-    #         for spot in self.__get_empty_spots():
-    #             if self.select_board_spot_and_check_winner(spot, symbol):
-    #                 self.__undo_spot_selection(spot)
-    #                 return spot
-    #             self.__undo_spot_selection(spot)
-    #
-    #     if len(available_spots) == 6 and self.board[1, 1] == -ord(my_symbol):
-    #         # if two opposite corners spots are of the opponent, and I have the middle mark an edge
-    #         if self.board[0, 0] == self.board[2, 2] or self.board[0, 2] == self.board[2, 0]:
-    #             return 2
-    #         # if exactly 3 plays where made, and I am in the center
-    #         # place next move in the corner that in the same row/column as the opponents moves
-    #         rows, cols = np.where(self.board == -ord(opponent_symbol))
-    #         top = rows[0] + rows[1] == 1
-    #         left = cols[0] + cols[1] == 1
-    #         if top and left:
-    #             return 1
-    #         if top and not left:
-    #             return 3
-    #         if not top and left:
-    #             return 7
-    #         return 9
-    #
-    #     # Try to take one of the corners
-    #     open_corners: List[int] = []
-    #     for spot in available_spots:
-    #         if spot in [1, 3, 7, 9]:
-    #             open_corners.append(spot)
-    #     if len(open_corners) > 0:
-    #         return random.choice(open_corners)
-    #
-    #     # Try to take the center
-    #     if 5 in available_spots:
-    #         return 5
-    #
-    #     # Take any edge
-    #     for spot in available_spots:
-    #         return spot
 
